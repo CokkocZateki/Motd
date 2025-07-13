@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Message of the Day</h1>
+<ul>
+  {% for motd in motds %}
+    <li>
+      {% if motd.group %}
+        <strong>{{ motd.group.name }}</strong><br />
+      {% else %}
+        <strong>{{ motd.state_name }}</strong><br />
+      {% endif %}
+      {{ motd.message|linebreaks }}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}
