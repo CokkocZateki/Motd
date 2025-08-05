@@ -1,0 +1,100 @@
+{% extends "allianceauth/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Message of the Day" %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            {% include "framework/page-header.html" with title="Message of the Day" %}
+
+            {% if messages %}
+                <div class="motd-list">
+                    {% for message in messages %}
+                        <div class="card mb-3 motd-message-card" data-priority="{{ message.priority }}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title">
+                                        {% if message.priority == 'critical' %}
+                                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                                        {% elif message.priority == 'high' %}
+                                            <i class="fas fa-exclamation-circle text-warning"></i>
+                                        {% elif message.priority == 'low' %}
+                                            <i class="fas fa-info-circle text-muted"></i>
+                                        {% else %}
+                                            <i class="fas fa-bullhorn text-primary"></i>
+                                        {% endif %}
+                                        {{ message.title }}
+
+                                        <span class="badge bg-{{ message.style }} ms-2">
+                                            {{ message.get_priority_display }}
+                                        </span>
+                                    </h5>
+                                </div>
+
+                                <div class="card-text motd-content">
+                                    {{ message.content|safe }}
+                                </div>
+
+                                <div class="motd-meta mt-3 pt-2 border-top text-muted small">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <i class="fas fa-calendar"></i>
+                                            Posted: {{ message.start_date|date:"M d, Y H:i" }}
+                                            {% if message.created_by %}
+                                                by {{ message.created_by.username }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6 text-md-end">
+                                            {% if message.end_date %}
+                                                <i class="fas fa-clock"></i>
+                                                Expires: {{ message.end_date|date:"M d, Y H:i" }}
+                                            {% else %}
+                                                <i class="fas fa-infinity"></i>
+                                                Permanent
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle fa-2x mb-3"></i>
+                    <h5>No Messages Available</h5>
+                    <p class="mb-0">There are currently no active MOTD messages to display.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.motd-message-card[data-priority="critical"] {
+    border-left: 4px solid #dc3545;
+}
+
+.motd-message-card[data-priority="high"] {
+    border-left: 4px solid #fd7e14;
+}
+
+.motd-message-card[data-priority="normal"] {
+    border-left: 4px solid #0d6efd;
+}
+
+.motd-message-card[data-priority="low"] {
+    border-left: 4px solid #6c757d;
+}
+
+.motd-meta {
+    font-size: 0.875rem;
+}
+
+.motd-content {
+    line-height: 1.5;
+}
+</style>
+{% endblock %}
