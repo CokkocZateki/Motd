@@ -1,3 +1,4 @@
+
 # AA MOTD - Message of the Day for Alliance Auth
 
 A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displays important announcements and notifications on the dashboard.
@@ -91,3 +92,15 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+=======
+# MOTD App
+
+
+
+The templates live in `motd/templates/motd/` and can be
+extended to suit your needs.  To use the app add `motd` to your
+`INSTALLED_APPS` and include `motd.urls` in your project URL
+configuration.  MOTDs can be managed through the Django admin interface.
+
+After installing the app, run `python manage.py migrate` to create the
+database tables for storing MOTDs.
