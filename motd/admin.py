@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
-
 from .models import MotdMessage
 
 
@@ -75,3 +74,18 @@ class MotdMessageAdmin(admin.ModelAdmin):
 
     status_display.short_description = 'Status'
 
+from .models import GroupMotd, StateMotd
+
+
+@admin.register(GroupMotd)
+class GroupMotdAdmin(admin.ModelAdmin):
+    list_display = ("group", "enabled")
+    list_filter = ("enabled",)
+    search_fields = ("group__name",)
+
+
+@admin.register(StateMotd)
+class StateMotdAdmin(admin.ModelAdmin):
+    list_display = ("state_name", "enabled")
+    list_filter = ("enabled",)
+    search_fields = ("state_name",)
