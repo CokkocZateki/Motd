@@ -8,6 +8,13 @@
     <div class="row">
         <div class="col-12">
             {% include "framework/page-header.html" with title="Message of the Day" %}
+            {% if user.has_perm('motd.add_motdmessage') %}
+                <div class="mb-3 text-end">
+                    <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus"></i> Add Message
+                    </a>
+                </div>
+            {% endif %}
 
             {% if messages %}
                 <div class="motd-list">

@@ -1,6 +1,5 @@
 from django.db import migrations, models
 import django.db.models.deletion
-
 from django.conf import settings
 import django.utils.timezone
 
@@ -13,7 +12,6 @@ class Migration(migrations.Migration):
         ('auth', '0012_alter_user_first_name_max_length'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
 
-
 class Migration(migrations.Migration):
     initial = True
 
@@ -23,7 +21,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-
             name='MotdMessage',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -44,6 +41,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'MOTD Message',
                 'verbose_name_plural': 'MOTD Messages',
                 'ordering': ['-priority', '-start_date'],
+
             name='GroupMotd',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

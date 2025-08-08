@@ -1,4 +1,3 @@
-
 # AA MOTD - Message of the Day for Alliance Auth
 
 A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displays important announcements and notifications on the dashboard.
@@ -10,7 +9,11 @@ A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displ
 - **Flexible Scheduling**: Set start and end dates for messages
 - **Group Restrictions**: Show messages only to specific groups or to all users
 - **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
+
+- **Front-end Management**: Users with permission can add messages directly from the dashboard
+
 - **Admin Interface**: Easy-to-use Django admin interface for managing messages
+
 - **Automatic Cleanup**: Management command to clean up expired messages
 - **Persistent Display**: Messages cannot be dismissed and remain until they expire or are deactivated
 
@@ -67,7 +70,11 @@ Set up a periodic task to clean up expired messages:
 
 ## Usage
 
+
+1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
+=======
 1. **Creating Messages**: Go to the Django admin interface and create new MOTD messages
+
 2. **Scheduling**: Set start and end dates to control when messages appear
 3. **Targeting**: Use group restrictions to show messages only to specific groups
 4. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
@@ -92,6 +99,7 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
 =======
 # MOTD App
 

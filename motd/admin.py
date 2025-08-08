@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
-
 from .models import MotdMessage
 
 
@@ -75,7 +74,6 @@ class MotdMessageAdmin(admin.ModelAdmin):
 
     status_display.short_description = 'Status'
 
-=======
 from .models import GroupMotd, StateMotd
 
 

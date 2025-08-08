@@ -105,7 +105,7 @@ class MotdMessage(models.Model):
             return self.restricted_to_groups.filter(id__in=user_groups).exists()
 
         return False
-=======
+
 from django.contrib.auth.models import Group
 
 

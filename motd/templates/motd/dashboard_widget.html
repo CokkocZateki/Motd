@@ -47,6 +47,11 @@
                 <a href="{% url 'motd:list' %}" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-list"></i> View All Messages
                 </a>
+                {% if user.has_perm('motd.add_motdmessage') %}
+                    <a href="{% url 'motd:create' %}" class="btn btn-sm btn-outline-success ms-2">
+                        <i class="fas fa-plus"></i> Add Message
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>

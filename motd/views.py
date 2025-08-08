@@ -1,6 +1,9 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import redirect, render
+from .forms import MotdMessageForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-
 from .models import MotdMessage
 
 
@@ -35,7 +38,22 @@ def motd_list(request):
         'user': user,
     }
     return render(request, 'motd/motd_list.html', context)
-=======
+@permission_required('motd.add_motdmessage')
+def motd_create(request):
+    """Create a new MOTD message from the dashboard"""
+    if request.method == 'POST':
+        form = MotdMessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.created_by = request.user
+            message.save()
+            form.save_m2m()
+            messages.success(request, 'Message created successfully.')
+            return redirect('motd:list')
+    else:
+        form = MotdMessageForm()
+
+    return render(request, 'motd/motd_form.html', {'form': form})
 from django.http import HttpRequest, HttpResponse
 
 from .models import GroupMotd, StateMotd
