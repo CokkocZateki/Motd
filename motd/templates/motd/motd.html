@@ -1,0 +1,19 @@
+{% extends "allianceauth/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Message of the Day" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  {% for motd in motds %}
+    <div class="card mb-3">
+      <div class="card-header">
+        {% if motd.group %}{{ motd.group.name }}{% else %}{{ motd.state_name }}{% endif %}
+      </div>
+      <div class="card-body">
+        {{ motd.message|linebreaks }}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

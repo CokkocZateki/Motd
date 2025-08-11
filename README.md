@@ -1,1 +1,87 @@
-# Motd
+# AA MOTD - Message of the Day for Alliance Auth
+
+A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displays important announcements and notifications on the dashboard.
+
+## Features
+
+- **Dashboard Widget**: Shows current MOTD messages on the main Alliance Auth dashboard
+- **Priority System**: Critical, High, Normal, and Low priority messages with visual indicators
+- **Flexible Scheduling**: Set start and end dates for messages
+- **Group Restrictions**: Show messages only to specific groups or to all users
+- **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
+- **Front-end Management**: Users with permission can add messages directly from the dashboard
+- **Automatic Cleanup**: Management command to clean up expired messages
+- **Persistent Display**: Messages cannot be dismissed and remain until they expire or are deactivated
+- **Group/State MOTDs**: Optional per-group or per-state messages available at `/motd/dashboard/`
+
+## Installation
+
+1. Install the package:
+```bash
+pip install aa-motd
+```
+
+2. Add to your Alliance Auth settings in `local.py`:
+```python
+INSTALLED_APPS += [
+    'motd',
+]
+```
+
+3. Run migrations:
+```bash
+python manage.py migrate
+python manage.py collectstatic
+```
+
+4. Restart your Alliance Auth services. The app automatically adds a dashboard widget and a "MOTD" menu entry for users with the `motd.view_motdmessage` permission.
+
+## Configuration
+
+### Permissions
+
+The app uses the following permissions:
+- `motd.view_motdmessage` - View MOTD messages
+- `motd.add_motdmessage` - Create MOTD messages  
+- `motd.change_motdmessage` - Edit MOTD messages
+- `motd.delete_motdmessage` - Delete MOTD messages
+
+Assign these permissions through the Alliance Auth admin interface.
+
+### Cleanup Command
+
+Set up a periodic task to clean up expired messages:
+
+```bash
+# Add to your crontab
+0 2 * * * cd /path/to/your/allianceauth && python manage.py motd_cleanup
+```
+
+## Usage
+
+1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
+2. **Scheduling**: Set start and end dates to control when messages appear
+3. **Targeting**: Use group restrictions to show messages only to specific groups
+4. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
+5. **Legacy Group/State Messages**: Visit `/motd/dashboard/` to view group- or state-specific MOTDs
+
+## Message Priorities
+
+- **Critical**: Red warning icon, highest priority
+- **High**: Orange exclamation, high priority  
+- **Normal**: Blue bullhorn, standard priority
+- **Low**: Gray info icon, lowest priority
+
+## Requirements
+
+- Alliance Auth >= 4.0.0
+- Django >= 4.0
+- Python >= 3.8
+
+## License
+
+MIT License
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

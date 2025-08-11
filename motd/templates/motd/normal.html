@@ -1,0 +1,12 @@
+{% extends "allianceauth/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Message of the Day" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="alert alert-info">
+    {% trans "No messages available." %}
+  </div>
+</div>
+{% endblock %}
