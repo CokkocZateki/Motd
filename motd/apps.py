@@ -9,3 +9,6 @@ class MotdConfig(AppConfig):
 
     def ready(self):
         pass
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "motd"
+    verbose_name = "MOTD Dashboard"

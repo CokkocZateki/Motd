@@ -2,9 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, render
 from django.http import HttpRequest, HttpResponse
-
 from .forms import MotdMessageForm
 from .models import MotdMessage, GroupMotd, StateMotd
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import MotdMessage
+
 
 
 @login_required
@@ -62,6 +65,13 @@ def motd_create(request):
 @login_required
 def motd_dashboard(request: HttpRequest) -> HttpResponse:
     """Original group/state MOTD system"""
+from django.http import HttpRequest, HttpResponse
+
+from .models import GroupMotd, StateMotd
+
+
+@login_required
+def motd_dashboard(request: HttpRequest) -> HttpResponse:
     user_groups = request.user.groups.all()
     group_motds = (
         GroupMotd.objects.filter(group__in=user_groups, enabled=True)

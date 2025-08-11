@@ -106,30 +106,35 @@ class MotdMessage(models.Model):
 
         return False
 
+from django.contrib.auth.models import Group
+
 
 class GroupMotd(models.Model):
+    """Stores a message of the day for a specific group."""
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['group__name']
-        verbose_name = 'Group MOTD'
-        verbose_name_plural = 'Group MOTDs'
+        verbose_name = "Group MOTD"
+        verbose_name_plural = "Group MOTDs"
+        ordering = ["group__name"]
 
-    def __str__(self):
-        return f"{self.group.name} MOTD"
+    def __str__(self) -> str:
+        return f"MOTD for {self.group.name}"
 
 
 class StateMotd(models.Model):
-    state_name = models.CharField(max_length=200, unique=True)
+    """Stores a message of the day for a specific Alliance Auth state."""
+
+    state_name = models.CharField(max_length=64, unique=True)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['state_name']
-        verbose_name = 'State MOTD'
-        verbose_name_plural = 'State MOTDs'
+        verbose_name = "State MOTD"
+        verbose_name_plural = "State MOTDs"
+        ordering = ["state_name"]
 
-    def __str__(self):
-        return f"{self.state_name} MOTD"
+    def __str__(self) -> str:
+        return f"MOTD for state {self.state_name}"

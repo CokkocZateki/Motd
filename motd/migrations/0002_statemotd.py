@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
                 'ordering': ['state_name'],
                 'verbose_name': 'State MOTD',
                 'verbose_name_plural': 'State MOTDs',
+                'ordering': ['state_name'],
             },
         ),
     ]
