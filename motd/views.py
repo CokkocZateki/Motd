@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, render
+from django.http import HttpRequest, HttpResponse
 from .forms import MotdMessageForm
-from .forms import MotdMessageForm
-from .forms import MotdMessageForm
+from .models import MotdMessage, GroupMotd, StateMotd
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .models import MotdMessage
+
 
 
 @login_required
@@ -41,9 +42,11 @@ def motd_list(request):
     }
     return render(request, 'motd/motd_list.html', context)
 
+
+@login_required
 @permission_required('motd.add_motdmessage')
 def motd_create(request):
-    """Create a new MOTD message from the dashboard"""
+    """Create a new MOTD message - Enhanced system"""
     if request.method == 'POST':
         form = MotdMessageForm(request.POST)
         if form.is_valid():
@@ -58,6 +61,10 @@ def motd_create(request):
 
     return render(request, 'motd/motd_form.html', {'form': form})
 
+
+@login_required
+def motd_dashboard(request: HttpRequest) -> HttpResponse:
+    """Original group/state MOTD system"""
 from django.http import HttpRequest, HttpResponse
 
 from .models import GroupMotd, StateMotd

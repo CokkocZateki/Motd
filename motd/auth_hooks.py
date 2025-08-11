@@ -2,6 +2,8 @@ from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+
+
 from . import urls
 from .models import MotdMessage
 from . import urls
@@ -36,6 +38,8 @@ def register_url():
 
 @hooks.register('dashboard_hook')
 def register_dashboard(request):
+    """Auto-inject dashboard widget"""
+
     if not request.user.has_perm('motd.view_motdmessage'):
         return ''
 

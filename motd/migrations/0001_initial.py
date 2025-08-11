@@ -41,6 +41,10 @@ class Migration(migrations.Migration):
                 'verbose_name': 'MOTD Message',
                 'verbose_name_plural': 'MOTD Messages',
                 'ordering': ['-priority', '-start_date'],
+            },
+        ),
+        # Create the original GroupMotd model for backward compatibility
+        migrations.CreateModel(
             name='GroupMotd',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

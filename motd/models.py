@@ -111,7 +111,6 @@ from django.contrib.auth.models import Group
 
 class GroupMotd(models.Model):
     """Stores a message of the day for a specific group."""
-
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
