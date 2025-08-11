@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name='aa-motd',
-    version='1.0.0',
-    author='Your Name',
-    author_email='your.email@example.com',
+    version='1.0.2',
+    author='Cokkoc Zateki',
+    author_email='N/A',
     description='Message of the Day app for Alliance Auth',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
