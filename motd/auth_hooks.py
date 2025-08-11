@@ -2,10 +2,10 @@ from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
-
 from . import urls
 from .models import MotdMessage
-
+from django.utils.translation import gettext_lazy as _
+from . import urls
 
 class MotdMenuItemHook(MenuItemHook):
     def __init__(self):
@@ -31,8 +31,6 @@ def register_menu():
 @hooks.register('url_hook')
 def register_url():
     return UrlHook(urls, 'motd', r'^motd/')
-
-
 @hooks.register('dashboard_hook')
 def register_dashboard(request):
     if not request.user.has_perm('motd.view_motdmessage'):
