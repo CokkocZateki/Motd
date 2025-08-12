@@ -31,18 +31,6 @@ def register_menu():
 def register_url():
     return UrlHook(urls, 'motd', r'^motd/')
 
-    active_messages = [
-        message
-        for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
-        if message.can_user_see(request.user)
-    ]
-
-    context = {
-        'messages': active_messages[:5],
-        'user': request.user,
-    }
-    return render_to_string('motd/dashboard_widget.html', context, request=request)
-
 class MotdDashboardItemHook:
     def __init__(self):
         self.name = 'MOTD Widget'
@@ -55,14 +43,9 @@ class MotdDashboardItemHook:
 
         active_messages = [
             message
-            for message in MotdMessage.objects.filter(is_active=True)
+            for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
             if message.can_user_see(request.user)
         ]
-
-        priority_order = {'critical': 4, 'high': 3, 'normal': 2, 'low': 1}
-        active_messages.sort(
-            key=lambda x: priority_order.get(x.priority, 0), reverse=True
-        )
 
         # Pass permission check result to template
         context = {
