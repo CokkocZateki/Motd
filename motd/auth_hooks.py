@@ -33,10 +33,10 @@ def register_url():
     return UrlHook(urls, 'motd', r'^motd/')
 
 
-# Dashboard widget hook class
 class MotdDashboardItemHook:
     def __init__(self):
-        pass
+        self.name = 'MOTD Widget'
+        self.order = 10  # IMPORTANT: Add these attributes
     
     def render(self, request):
         """Render the dashboard widget"""
@@ -54,9 +54,11 @@ class MotdDashboardItemHook:
             key=lambda x: priority_order.get(x.priority, 0), reverse=True
         )
 
+        # Pass permission check result to template
         context = {
             'messages': active_messages[:5],
             'user': request.user,
+            'can_add_message': request.user.has_perm('motd.add_motdmessage'),
         }
         return render_to_string('motd/dashboard_widget.html', context, request=request)
 
