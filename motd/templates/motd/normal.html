@@ -1,12 +1,21 @@
 {% extends "allianceauth/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block page_title %}{% trans "Message of the Day" %}{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="alert alert-info">
-    {% trans "No messages available." %}
-  </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2>{% trans "Message of the Day" %}</h2>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> {% trans "No messages available." %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
