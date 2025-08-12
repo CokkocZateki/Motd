@@ -1,5 +1,6 @@
 {% extends "allianceauth/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block page_title %}{% trans "Message of the Day" %}{% endblock %}
 
@@ -7,19 +8,19 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            {% include "motd/partials/page_header.html" with title="Message of the Day" %}
-            {% if perms.motd.add_motdmessage %}
-                <div class="mb-3 text-end">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2>{% trans "Message of the Day" %}</h2>
+                {% if perms.motd.add_motdmessage %}
                     <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
                         <i class="fas fa-plus"></i> Add Message
                     </a>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
 
             {% if messages %}
                 <div class="motd-list">
                     {% for message in messages %}
-                        <div class="card mb-3 motd-message-card border-start border-4 border-{{ message.style }}">
+                        <div class="card mb-3 motd-message-card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <h5 class="card-title">
@@ -80,7 +81,25 @@
 </div>
 
 <style>
-/* border color handled via Bootstrap utility classes */
+.motd-message-card {
+    border-left: 4px solid;
+}
+
+.motd-message-card:has(.fa-exclamation-triangle) {
+    border-left-color: var(--bs-danger);
+}
+
+.motd-message-card:has(.fa-exclamation-circle) {
+    border-left-color: var(--bs-warning);
+}
+
+.motd-message-card:has(.fa-check-circle) {
+    border-left-color: var(--bs-success);
+}
+
+.motd-message-card:has(.fa-info-circle) {
+    border-left-color: var(--bs-info);
+}
 
 .motd-meta {
     font-size: 0.875rem;
