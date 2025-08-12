@@ -3,8 +3,9 @@
 <div id="motd-dashboard-widget" class="col-12 mb-3">
     <div class="card">
         <div class="card-body">
-            {% translate "Message of the Day" as widget_title %}
-            {% include "framework/dashboard/widget-title.html" with title=widget_title %}
+            <h5 class="card-title">
+                <i class="fas fa-bullhorn"></i> {% trans "Message of the Day" %}
+            </h5>
             
             <div class="motd-messages">
                 {% if messages %}
@@ -47,7 +48,7 @@
                 <a href="{% url 'motd:list' %}" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-list"></i> View All Messages
                 </a>
-                {% if user.has_perm('motd.add_motdmessage') %}
+                {% if can_add_message %}
                     <a href="{% url 'motd:create' %}" class="btn btn-sm btn-outline-success ms-2">
                         <i class="fas fa-plus"></i> Add Message
                     </a>
