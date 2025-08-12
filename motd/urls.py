@@ -4,11 +4,12 @@ from . import views
 app_name = 'motd'
 
 urlpatterns = [
-    path("", views.motd_dashboard, name="motd-dashboard"),
-    path("list/", views.motd_list, name="list"),
+    path("", views.motd_list, name="list"),
     path("widget/", views.dashboard_widget, name="dashboard_widget"),
     path("create/", views.motd_create, name="create"),
-  
-    # Original group/state MOTD system URL (separate path)
-    path('dashboard/', views.motd_dashboard, name='motd-dashboard'),
+    path("edit/<int:pk>/", views.motd_edit, name="edit"),
+    path("delete/<int:pk>/", views.motd_delete, name="delete"),
+    
+    # Legacy group/state MOTD system
+    path("dashboard/", views.motd_dashboard, name="motd-dashboard"),
 ]
