@@ -19,26 +19,45 @@
         </div>
     {% endif %}
 
-    {% if messages %}
+    {% if messages_list %}
         <div class="motd-list">
-            {% for message in messages %}
+            {% for message in messages_list %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">
-                            {% if message.style == 'danger' %}
-                                <i class="fas fa-exclamation-triangle text-danger"></i>
-                            {% elif message.style == 'warning' %}
-                                <i class="fas fa-exclamation-circle text-warning"></i>
-                            {% elif message.style == 'success' %}
-                                <i class="fas fa-check-circle text-success"></i>
-                            {% else %}
-                                <i class="fas fa-info-circle text-info"></i>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title">
+                                {% if message.style == 'danger' %}
+                                    <i class="fas fa-exclamation-triangle text-danger"></i>
+                                {% elif message.style == 'warning' %}
+                                    <i class="fas fa-exclamation-circle text-warning"></i>
+                                {% elif message.style == 'success' %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle text-info"></i>
+                                {% endif %}
+                                {{ message.title }}
+                                <span class="badge bg-{{ message.style }} ms-2">
+                                    {{ message.get_style_display }}
+                                </span>
+                            </h5>
+                            
+                            {% if perms.motd.change_motdmessage or perms.motd.delete_motdmessage %}
+                            <div class="btn-group btn-group-sm">
+                                {% if perms.motd.change_motdmessage %}
+                                <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% endif %}
+                                {% if perms.motd.delete_motdmessage %}
+                                <button type="button" class="btn btn-outline-danger" 
+                                        onclick="confirmDelete({{ message.id }}, '{{ message.title|escapejs }}')"
+                                        title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
                             {% endif %}
-                            {{ message.title }}
-                            <span class="badge bg-{{ message.style }} ms-2">
-                                {{ message.get_style_display }}
-                            </span>
-                        </h5>
+                        </div>
 
                         <div class="card-text motd-content">
                             {{ message.content|safe }}
@@ -55,25 +74,3 @@
                                 </div>
                                 <div class="col-md-6 text-md-end">
                                     {% if message.end_date %}
-                                        <i class="fas fa-clock"></i>
-                                        Expires: {{ message.end_date|date:"M d, Y H:i" }}
-                                    {% else %}
-                                        <i class="fas fa-infinity"></i>
-                                        Permanent
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="alert alert-info text-center">
-            <i class="fas fa-info-circle fa-2x mb-3"></i>
-            <h5>No Messages Available</h5>
-            <p class="mb-0">There are currently no active MOTD messages to display.</p>
-        </div>
-    {% endif %}
-</div>
-{% endblock %}
