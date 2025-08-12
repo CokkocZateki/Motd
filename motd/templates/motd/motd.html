@@ -1,19 +1,32 @@
 {% extends "allianceauth/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block page_title %}{% trans "Message of the Day" %}{% endblock %}
 
 {% block content %}
-<div class="container">
-  {% for motd in motds %}
-    <div class="card mb-3">
-      <div class="card-header">
-        {% if motd.group %}{{ motd.group.name }}{% else %}{{ motd.state_name }}{% endif %}
-      </div>
-      <div class="card-body">
-        {{ motd.message|linebreaks }}
-      </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2>{% trans "Group/State Messages" %}</h2>
+            </div>
+            
+            {% for motd in motds %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {% if motd.group %}
+                            <i class="fas fa-users"></i> {{ motd.group.name }}
+                        {% else %}
+                            <i class="fas fa-flag"></i> {{ motd.state_name }}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {{ motd.message|linebreaks }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-  {% endfor %}
 </div>
 {% endblock %}
