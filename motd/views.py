@@ -1,13 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
-from .models import MotdMessage, GroupMotd, StateMotd
-from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.urls import reverse
 from .forms import MotdMessageForm
 from .models import MotdMessage, GroupMotd, StateMotd
-
-
 
 
 @login_required
@@ -23,8 +20,11 @@ def dashboard_widget(request):
     context = {
         'messages': active_messages[:5],
         'user': user,
+        'can_add_message': request.user.has_perm('motd.add_motdmessage'),
     }
     return render(request, 'motd/dashboard_widget.html', context)
+
+
 @login_required
 def motd_list(request):
     user = request.user
@@ -34,14 +34,17 @@ def motd_list(request):
         if message.can_user_see(user)
     ]
 
-    context = {'messages': all_messages, 'user': user}
+    context = {
+        'messages_list': all_messages,  # Changed from 'messages' to avoid conflict with Django messages
+        'user': user,
+    }
     return render(request, 'motd/motd_list.html', context)
 
 
 @login_required
 @permission_required('motd.add_motdmessage')
 def motd_create(request):
-    """Create a new MOTD message - Enhanced system"""
+    """Create a new MOTD message"""
     if request.method == 'POST':
         form = MotdMessageForm(request.POST)
         if form.is_valid():
@@ -54,10 +57,45 @@ def motd_create(request):
     else:
         form = MotdMessageForm()
 
-    return render(request, 'motd/motd_form.html', {'form': form})
+    return render(request, 'motd/motd_form.html', {'form': form, 'action': 'Create'})
+
+
+@login_required
+@permission_required('motd.change_motdmessage')
+def motd_edit(request, pk):
+    """Edit an existing MOTD message"""
+    motd_message = get_object_or_404(MotdMessage, pk=pk)
+    
+    if request.method == 'POST':
+        form = MotdMessageForm(request.POST, instance=motd_message)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Message updated successfully.')
+            return redirect('motd:list')
+    else:
+        form = MotdMessageForm(instance=motd_message)
+
+    return render(request, 'motd/motd_form.html', {'form': form, 'action': 'Edit'})
+
+
+@login_required
+@permission_required('motd.delete_motdmessage')
+def motd_delete(request, pk):
+    """Delete a MOTD message"""
+    motd_message = get_object_or_404(MotdMessage, pk=pk)
+    
+    if request.method == 'POST':
+        motd_message.delete()
+        messages.success(request, f'Message "{motd_message.title}" deleted successfully.')
+        return redirect('motd:list')
+    
+    # If not POST, redirect to list
+    return redirect('motd:list')
+
 
 @login_required
 def motd_dashboard(request: HttpRequest) -> HttpResponse:
+    """Legacy group/state MOTD system"""
     user_groups = request.user.groups.all()
     group_motds = (
         GroupMotd.objects.filter(group__in=user_groups, enabled=True)
