@@ -74,3 +74,56 @@
                                 </div>
                                 <div class="col-md-6 text-md-end">
                                     {% if message.end_date %}
+                                        <i class="fas fa-clock"></i>
+                                        Expires: {{ message.end_date|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        <i class="fas fa-infinity"></i>
+                                        Permanent
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x mb-3"></i>
+            <h5>No Messages Available</h5>
+            <p class="mb-0">There are currently no active MOTD messages to display.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the message: <strong id="deleteMessageTitle"></strong>?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(messageId, messageTitle) {
+    document.getElementById('deleteMessageTitle').textContent = messageTitle;
+    document.getElementById('deleteForm').action = "{% url 'motd:delete' 0 %}".replace('0', messageId);
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}
