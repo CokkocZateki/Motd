@@ -2,10 +2,9 @@ from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
+
 from . import urls
 from .models import MotdMessage
-from django.utils.translation import gettext_lazy as _
-from . import urls
 
 class MotdMenuItemHook(MenuItemHook):
     def __init__(self):
@@ -38,14 +37,9 @@ def register_dashboard(request):
 
     active_messages = [
         message
-        for message in MotdMessage.objects.filter(is_active=True)
+        for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
         if message.can_user_see(request.user)
     ]
-
-    priority_order = {'critical': 4, 'high': 3, 'normal': 2, 'low': 1}
-    active_messages.sort(
-        key=lambda x: priority_order.get(x.priority, 0), reverse=True
-    )
 
     context = {
         'messages': active_messages[:5],

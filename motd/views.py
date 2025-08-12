@@ -1,11 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+
 from .forms import MotdMessageForm
-from .forms import MotdMessageForm
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import MotdMessage
+from .models import MotdMessage, GroupMotd, StateMotd
 
 
 @login_required
@@ -14,12 +13,10 @@ def dashboard_widget(request):
     user = request.user
     active_messages = [
         message
-        for message in MotdMessage.objects.filter(is_active=True)
+        for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
         if message.can_user_see(user)
     ]
 
-    priority_order = {'critical': 4, 'high': 3, 'normal': 2, 'low': 1}
-    active_messages.sort(key=lambda x: priority_order.get(x.priority, 0), reverse=True)
     context = {
         'messages': active_messages[:5],
         'user': user,
@@ -30,14 +27,11 @@ def motd_list(request):
     user = request.user
     all_messages = [
         message
-        for message in MotdMessage.objects.filter(is_active=True)
+        for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
         if message.can_user_see(user)
     ]
 
-    context = {
-        'messages': all_messages,
-        'user': user,
-    }
+    context = {'messages': all_messages, 'user': user}
     return render(request, 'motd/motd_list.html', context)
 
 @permission_required('motd.add_motdmessage')
@@ -56,11 +50,6 @@ def motd_create(request):
         form = MotdMessageForm()
 
     return render(request, 'motd/motd_form.html', {'form': form})
-
-from django.http import HttpRequest, HttpResponse
-
-from .models import GroupMotd, StateMotd
-
 
 @login_required
 def motd_dashboard(request: HttpRequest) -> HttpResponse:

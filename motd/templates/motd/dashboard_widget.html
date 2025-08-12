@@ -9,17 +9,17 @@
             <div class="motd-messages">
                 {% if messages %}
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.style }} motd-alert" data-priority="{{ message.priority }}">
+                        <div class="alert alert-{{ message.style }} motd-alert">
                             <div class="motd-content">
                                 <h6 class="alert-heading mb-2">
-                                    {% if message.priority == 'critical' %}
+                                    {% if message.style == 'danger' %}
                                         <i class="fas fa-exclamation-triangle"></i>
-                                    {% elif message.priority == 'high' %}
+                                    {% elif message.style == 'warning' %}
                                         <i class="fas fa-exclamation-circle"></i>
-                                    {% elif message.priority == 'low' %}
-                                        <i class="fas fa-info-circle"></i>
+                                    {% elif message.style == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
                                     {% else %}
-                                        <i class="fas fa-bullhorn"></i>
+                                        <i class="fas fa-info-circle"></i>
                                     {% endif %}
                                     {{ message.title }}
                                 </h6>
@@ -28,7 +28,7 @@
                                 </div>
                                 {% if message.end_date %}
                                     <small class="text-muted d-block mt-2">
-                                        <i class="fas fa-clock"></i> 
+                                        <i class="fas fa-clock"></i>
                                         Expires: {{ message.end_date|date:"M d, Y H:i" }}
                                     </small>
                                 {% endif %}
@@ -63,24 +63,24 @@
     border-left: 4px solid;
 }
 
-.motd-alert[data-priority="critical"] {
+.motd-alert.alert-danger {
     border-left-color: #dc3545;
     box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
 }
 
-.motd-alert[data-priority="high"] {
+.motd-alert.alert-warning {
     border-left-color: #fd7e14;
     box-shadow: 0 2px 4px rgba(253, 126, 20, 0.1);
 }
 
-.motd-alert[data-priority="normal"] {
+.motd-alert.alert-info {
     border-left-color: #0d6efd;
     box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1);
 }
 
-.motd-alert[data-priority="low"] {
-    border-left-color: #6c757d;
-    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.1);
+.motd-alert.alert-success {
+    border-left-color: #198754;
+    box-shadow: 0 2px 4px rgba(25, 135, 84, 0.1);
 }
 
 .motd-content h6.alert-heading {
