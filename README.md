@@ -9,13 +9,9 @@ A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displ
 - **Group Restrictions**: Show messages only to specific groups or to all users
 - **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
 - **Front-end Management**: Users with permission can add messages directly from the dashboard
-=======
-
-- **Front-end Management**: Users with permission can add messages directly from the dashboard
-
-- **Admin Interface**: Easy-to-use Django admin interface for managing messages
 - **Automatic Cleanup**: Management command to clean up expired messages
 - **Persistent Display**: Messages cannot be dismissed and remain until they expire or are deactivated
+- **Group/State MOTDs**: Optional per-group or per-state messages available at `/motd/dashboard/`
 
 ## Installation
 
@@ -37,11 +33,6 @@ python manage.py migrate
 python manage.py collectstatic
 ```
 4. Restart your Alliance Auth services. The app automatically adds a dashboard widget and a "MOTD" menu entry for users with the `motd.view_motdmessage` permission.
-
-## Configuration
-
-=======
-4. Restart your Alliance Auth services.
 
 ## Configuration
 
@@ -73,16 +64,12 @@ Set up a periodic task to clean up expired messages:
 
 ## Usage
 
-1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
-=======
 
 1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
-=======
-1. **Creating Messages**: Go to the Django admin interface and create new MOTD messages
-
 2. **Scheduling**: Set start and end dates to control when messages appear
 3. **Targeting**: Use group restrictions to show messages only to specific groups
-4. **Styling**: Choose appropriate Bootstrap alert styles for visual impact
+4. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
+5. **Legacy Group/State Messages**: Visit `/motd/dashboard/` to view group- or state-specific MOTDs
 
 ## Requirements
 
@@ -98,11 +85,7 @@ MIT License
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-=======
 # MOTD App
-
-
-
 The templates live in `motd/templates/motd/` and can be
 extended to suit your needs.  To use the app add `motd` to your
 `INSTALLED_APPS` and include `motd.urls` in your project URL

@@ -1,5 +1,12 @@
-{% extends "base.html" %}
+{% extends "allianceauth/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Message of the Day" %}{% endblock %}
+
 {% block content %}
-<h1>MOTD</h1>
-<p>Hello pilot!</p>
+<div class="container">
+  <div class="alert alert-info">
+    {% trans "No messages available." %}
+  </div>
+</div>
 {% endblock %}
