@@ -1,112 +1,79 @@
-{% extends "allianceauth/base.html" %}
+{% extends "allianceauth/base-bs5.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block page_title %}{% trans "Message of the Day" %}{% endblock %}
 
+{% block sidebar %}
+    {% include 'allianceauth/sidebar.html' %}
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h2>{% trans "Message of the Day" %}</h2>
-                {% if perms.motd.add_motdmessage %}
-                    <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
-                        <i class="fas fa-plus"></i> Add Message
-                    </a>
-                {% endif %}
-            </div>
+<div class="col-lg-12">
+    <h2>{% trans "Message of the Day" %}</h2>
+    {% if perms.motd.add_motdmessage %}
+        <div class="mb-3 text-end">
+            <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
+                <i class="fas fa-plus"></i> Add Message
+            </a>
+        </div>
+    {% endif %}
 
-            {% if messages %}
-                <div class="motd-list">
-                    {% for message in messages %}
-                        <div class="card mb-3 motd-message-card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <h5 class="card-title">
-                                        {% if message.style == 'danger' %}
-                                            <i class="fas fa-exclamation-triangle text-danger"></i>
-                                        {% elif message.style == 'warning' %}
-                                            <i class="fas fa-exclamation-circle text-warning"></i>
-                                        {% elif message.style == 'success' %}
-                                            <i class="fas fa-check-circle text-success"></i>
-                                        {% else %}
-                                            <i class="fas fa-info-circle text-info"></i>
-                                        {% endif %}
-                                        {{ message.title }}
+    {% if messages %}
+        <div class="motd-list">
+            {% for message in messages %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {% if message.style == 'danger' %}
+                                <i class="fas fa-exclamation-triangle text-danger"></i>
+                            {% elif message.style == 'warning' %}
+                                <i class="fas fa-exclamation-circle text-warning"></i>
+                            {% elif message.style == 'success' %}
+                                <i class="fas fa-check-circle text-success"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle text-info"></i>
+                            {% endif %}
+                            {{ message.title }}
+                            <span class="badge bg-{{ message.style }} ms-2">
+                                {{ message.get_style_display }}
+                            </span>
+                        </h5>
 
-                                        <span class="badge bg-{{ message.style }} ms-2">
-                                            {{ message.get_style_display }}
-                                        </span>
-                                    </h5>
+                        <div class="card-text motd-content">
+                            {{ message.content|safe }}
+                        </div>
+
+                        <div class="motd-meta mt-3 pt-2 border-top text-muted small">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <i class="fas fa-calendar"></i>
+                                    Posted: {{ message.start_date|date:"M d, Y H:i" }}
+                                    {% if message.created_by %}
+                                        by {{ message.created_by.username }}
+                                    {% endif %}
                                 </div>
-
-                                <div class="card-text motd-content">
-                                    {{ message.content|safe }}
-                                </div>
-
-                                <div class="motd-meta mt-3 pt-2 border-top text-muted small">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <i class="fas fa-calendar"></i>
-                                            Posted: {{ message.start_date|date:"M d, Y H:i" }}
-                                            {% if message.created_by %}
-                                                by {{ message.created_by.username }}
-                                            {% endif %}
-                                        </div>
-                                        <div class="col-md-6 text-md-end">
-                                            {% if message.end_date %}
-                                                <i class="fas fa-clock"></i>
-                                                Expires: {{ message.end_date|date:"M d, Y H:i" }}
-                                            {% else %}
-                                                <i class="fas fa-infinity"></i>
-                                                Permanent
-                                            {% endif %}
-                                        </div>
-                                    </div>
+                                <div class="col-md-6 text-md-end">
+                                    {% if message.end_date %}
+                                        <i class="fas fa-clock"></i>
+                                        Expires: {{ message.end_date|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        <i class="fas fa-infinity"></i>
+                                        Permanent
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
-            {% else %}
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle fa-2x mb-3"></i>
-                    <h5>No Messages Available</h5>
-                    <p class="mb-0">There are currently no active MOTD messages to display.</p>
-                </div>
-            {% endif %}
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x mb-3"></i>
+            <h5>No Messages Available</h5>
+            <p class="mb-0">There are currently no active MOTD messages to display.</p>
+        </div>
+    {% endif %}
 </div>
-
-<style>
-.motd-message-card {
-    border-left: 4px solid;
-}
-
-.motd-message-card:has(.fa-exclamation-triangle) {
-    border-left-color: var(--bs-danger);
-}
-
-.motd-message-card:has(.fa-exclamation-circle) {
-    border-left-color: var(--bs-warning);
-}
-
-.motd-message-card:has(.fa-check-circle) {
-    border-left-color: var(--bs-success);
-}
-
-.motd-message-card:has(.fa-info-circle) {
-    border-left-color: var(--bs-info);
-}
-
-.motd-meta {
-    font-size: 0.875rem;
-}
-
-.motd-content {
-    line-height: 1.5;
-}
-</style>
 {% endblock %}
