@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            {% include "allianceauth/partials/page_header.html" with title="Message of the Day" %}
+            {% include "motd/partials/page_header.html" with title="Message of the Day" %}
             {% if perms.motd.add_motdmessage %}
                 <div class="mb-3 text-end">
                     <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
