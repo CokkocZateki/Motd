@@ -19,23 +19,23 @@
             {% if messages %}
                 <div class="motd-list">
                     {% for message in messages %}
-                        <div class="card mb-3 motd-message-card" data-priority="{{ message.priority }}">
+                        <div class="card mb-3 motd-message-card border-start border-4 border-{{ message.style }}">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <h5 class="card-title">
-                                        {% if message.priority == 'critical' %}
+                                        {% if message.style == 'danger' %}
                                             <i class="fas fa-exclamation-triangle text-danger"></i>
-                                        {% elif message.priority == 'high' %}
+                                        {% elif message.style == 'warning' %}
                                             <i class="fas fa-exclamation-circle text-warning"></i>
-                                        {% elif message.priority == 'low' %}
-                                            <i class="fas fa-info-circle text-muted"></i>
+                                        {% elif message.style == 'success' %}
+                                            <i class="fas fa-check-circle text-success"></i>
                                         {% else %}
-                                            <i class="fas fa-bullhorn text-primary"></i>
+                                            <i class="fas fa-info-circle text-info"></i>
                                         {% endif %}
                                         {{ message.title }}
 
                                         <span class="badge bg-{{ message.style }} ms-2">
-                                            {{ message.get_priority_display }}
+                                            {{ message.get_style_display }}
                                         </span>
                                     </h5>
                                 </div>
@@ -80,21 +80,7 @@
 </div>
 
 <style>
-.motd-message-card[data-priority="critical"] {
-    border-left: 4px solid #dc3545;
-}
-
-.motd-message-card[data-priority="high"] {
-    border-left: 4px solid #fd7e14;
-}
-
-.motd-message-card[data-priority="normal"] {
-    border-left: 4px solid #0d6efd;
-}
-
-.motd-message-card[data-priority="low"] {
-    border-left: 4px solid #6c757d;
-}
+/* border color handled via Bootstrap utility classes */
 
 .motd-meta {
     font-size: 0.875rem;

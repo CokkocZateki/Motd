@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 from . import urls
 from .models import MotdMessage
 
-
 class MotdMenuItemHook(MenuItemHook):
     def __init__(self):
         MenuItemHook.__init__(
@@ -32,6 +31,17 @@ def register_menu():
 def register_url():
     return UrlHook(urls, 'motd', r'^motd/')
 
+    active_messages = [
+        message
+        for message in MotdMessage.objects.filter(is_active=True).order_by('-start_date')
+        if message.can_user_see(request.user)
+    ]
+
+    context = {
+        'messages': active_messages[:5],
+        'user': request.user,
+    }
+    return render_to_string('motd/dashboard_widget.html', context, request=request)
 
 class MotdDashboardItemHook:
     def __init__(self):

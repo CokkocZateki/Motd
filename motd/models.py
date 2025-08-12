@@ -7,13 +7,6 @@ from django.utils import timezone
 class MotdMessage(models.Model):
     """Model for storing MOTD messages"""
 
-    PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('normal', 'Normal'),
-        ('high', 'High'),
-        ('critical', 'Critical'),
-    ]
-
     STYLE_CHOICES = [
         ('info', 'Info (Blue)'),
         ('success', 'Success (Green)'),
@@ -23,12 +16,6 @@ class MotdMessage(models.Model):
 
     title = models.CharField(max_length=200, help_text="Title of the MOTD message")
     content = models.TextField(help_text="Message content (HTML allowed)")
-    priority = models.CharField(
-        max_length=10,
-        choices=PRIORITY_CHOICES,
-        default='normal',
-        help_text="Message priority level",
-    )
     style = models.CharField(
         max_length=10,
         choices=STYLE_CHOICES,
@@ -67,12 +54,12 @@ class MotdMessage(models.Model):
     )
 
     class Meta:
-        ordering = ['-priority', '-start_date']
+        ordering = ['-start_date']
         verbose_name = "MOTD Message"
         verbose_name_plural = "MOTD Messages"
 
     def __str__(self):
-        return f"{self.title} ({self.get_priority_display()})"
+        return f"{self.title} ({self.get_style_display()})"
 
     def clean(self):
         if self.end_date and self.end_date <= self.start_date:
@@ -105,8 +92,6 @@ class MotdMessage(models.Model):
             return self.restricted_to_groups.filter(id__in=user_groups).exists()
 
         return False
-
-from django.contrib.auth.models import Group
 
 
 class GroupMotd(models.Model):

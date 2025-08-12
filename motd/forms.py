@@ -9,7 +9,6 @@ class MotdMessageForm(forms.ModelForm):
         fields = [
             "title",
             "content",
-            "priority",
             "style",
             "start_date",
             "end_date",

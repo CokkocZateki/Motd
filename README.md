@@ -5,7 +5,6 @@ A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displ
 ## Features
 
 - **Dashboard Widget**: Shows current MOTD messages on the main Alliance Auth dashboard
-- **Priority System**: Critical, High, Normal, and Low priority messages with visual indicators
 - **Flexible Scheduling**: Set start and end dates for messages
 - **Group Restrictions**: Show messages only to specific groups or to all users
 - **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
@@ -71,14 +70,6 @@ Set up a periodic task to clean up expired messages:
 3. **Targeting**: Use group restrictions to show messages only to specific groups
 4. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
 5. **Legacy Group/State Messages**: Visit `/motd/dashboard/` to view group- or state-specific MOTDs
-
-
-## Message Priorities
-
-- **Critical**: Red warning icon, highest priority
-- **High**: Orange exclamation, high priority  
-- **Normal**: Blue bullhorn, standard priority
-- **Low**: Gray info icon, lowest priority
 
 ## Requirements
 

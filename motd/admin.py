@@ -8,7 +8,6 @@ from .models import MotdMessage, GroupMotd, StateMotd
 class MotdMessageAdmin(admin.ModelAdmin):
     list_display = [
         'title',
-        'priority',
         'style',
         'is_active',
         'start_date',
@@ -18,7 +17,6 @@ class MotdMessageAdmin(admin.ModelAdmin):
         'status_display',
     ]
     list_filter = [
-        'priority',
         'style',
         'is_active',
         'show_to_all',
@@ -32,7 +30,7 @@ class MotdMessageAdmin(admin.ModelAdmin):
         (
             'Message Content',
             {
-                'fields': ['title', 'content', 'priority', 'style'],
+                'fields': ['title', 'content', 'style'],
             },
         ),
         (
