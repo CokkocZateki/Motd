@@ -8,7 +8,7 @@ from .models import MotdMessage, GroupMotd, StateMotd
 class MotdMessageAdmin(admin.ModelAdmin):
     list_display = [
         'title',
-        'style',
+        'priority_display',
         'is_active',
         'start_date',
         'end_date',
@@ -43,6 +43,7 @@ class MotdMessageAdmin(admin.ModelAdmin):
             'Access Control',
             {
                 'fields': ['show_to_all', 'restricted_to_groups'],
+                'description': 'Show to all will display to users with Member state only',
             },
         ),
         (
@@ -59,6 +60,20 @@ class MotdMessageAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
+    def priority_display(self, obj):
+        colors = {
+            'info': 'info',
+            'success': 'success', 
+            'warning': 'warning',
+            'danger': 'danger'
+        }
+        return format_html(
+            '<span class="badge bg-{}">{}</span>',
+            colors.get(obj.style, 'secondary'),
+            obj.get_style_display()
+        )
+    priority_display.short_description = 'Priority'
+
     def status_display(self, obj):
         if obj.is_currently_active():
             return format_html('<span style="color: green;">Active</span>')
@@ -69,10 +84,8 @@ class MotdMessageAdmin(admin.ModelAdmin):
         if obj.end_date and obj.end_date <= timezone.now():
             return format_html('<span style="color: gray;">Expired</span>')
         return format_html('<span style="color: gray;">Inactive</span>')
-
     status_display.short_description = 'Status'
 
-from .models import GroupMotd, StateMotd
 
 @admin.register(GroupMotd)
 class GroupMotdAdmin(admin.ModelAdmin):
