@@ -2,10 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block extra_head %}
-<title>Message of the Day</title>
-{% endblock %}
-
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
 {% endblock %}
@@ -122,6 +118,11 @@
 </div>
 
 <script>
+// Force title change
+document.addEventListener('DOMContentLoaded', function() {
+    document.title = 'Message of the Day';
+});
+
 function confirmDelete(messageId, messageTitle) {
     document.getElementById('deleteMessageTitle').textContent = messageTitle;
     document.getElementById('deleteForm').action = "{% url 'motd:delete' 0 %}".replace('0', messageId);
