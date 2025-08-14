@@ -2,10 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block extra_head %}
-<title>Message of the Day</title>
-{% endblock %}
-
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
 {% endblock %}
@@ -18,4 +14,10 @@
         <i class="fas fa-info-circle"></i> {% trans "No messages available." %}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.title = 'Message of the Day';
+});
+</script>
 {% endblock %}
