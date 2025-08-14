@@ -35,7 +35,7 @@ def motd_list(request):
     ]
 
     context = {
-        'messages_list': all_messages,  # Changed from 'messages' to avoid conflict with Django messages
+        'messages_list': all_messages,
         'user': user,
     }
     return render(request, 'motd/motd_list.html', context)
@@ -50,8 +50,14 @@ def motd_create(request):
         if form.is_valid():
             message = form.save(commit=False)
             message.created_by = request.user
-            message.save()
+            message.save()  # Save the message first
+            
+            # Now save the many-to-many relationships
             form.save_m2m()
+            
+            # Debug: Check if groups were saved
+            print(f"Message saved with {message.restricted_to_groups.count()} groups")
+            
             messages.success(request, 'Message created successfully.')
             return redirect('motd:list')
     else:
@@ -69,7 +75,12 @@ def motd_edit(request, pk):
     if request.method == 'POST':
         form = MotdMessageForm(request.POST, instance=motd_message)
         if form.is_valid():
-            form.save()
+            message = form.save(commit=False)
+            message.save()  # Save the message first
+            
+            # Now save the many-to-many relationships
+            form.save_m2m()
+            
             messages.success(request, 'Message updated successfully.')
             return redirect('motd:list')
     else:
@@ -89,7 +100,6 @@ def motd_delete(request, pk):
         messages.success(request, f'Message "{motd_message.title}" deleted successfully.')
         return redirect('motd:list')
     
-    # If not POST, redirect to list
     return redirect('motd:list')
 
 
