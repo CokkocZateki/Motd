@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from . import urls
 from .models import MotdMessage
 
+
 class MotdMenuItemHook(MenuItemHook):
     def __init__(self):
         MenuItemHook.__init__(
@@ -31,10 +32,11 @@ def register_menu():
 def register_url():
     return UrlHook(urls, 'motd', r'^motd/')
 
+
 class MotdDashboardItemHook:
     def __init__(self):
         self.name = 'MOTD Widget'
-        self.order = 10  # IMPORTANT: Add these attributes
+        self.order = 0  # CHANGED from 10 to 0 - will appear FIRST on dashboard
     
     def render(self, request):
         """Render the dashboard widget"""
