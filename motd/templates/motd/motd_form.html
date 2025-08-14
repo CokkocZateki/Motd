@@ -1,29 +1,10 @@
-{% extends "allianceauth/base.html" %}
+{% extends "allianceauth/base-bs5.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}{{ action }} {% trans "MOTD" %}{% endblock %}
 {% block page_title %}{{ action }} {% trans "MOTD" %}{% endblock %}
 
-{% block content %}
-<div class="container-fluid">
-    <h2>{{ action }} {% trans "MOTD Message" %}</h2>
-    
-    <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                    {{ form.as_p }}
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> {% trans "Save Message" %}
-                </button>
-                <a href="{% url 'motd:list' %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> {% trans "Cancel" %}
-                </a>
-            </form>
-        </div>
-    </div>
-</div>
+{% block sidebar %}
+    {% include 'allianceauth/sidebar.html' %}
 {% endblock %}
