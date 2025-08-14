@@ -2,7 +2,9 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}{{ action }} MOTD - {{ block.super }}{% endblock %}
+{% block extra_head %}
+<title>{{ action }} MOTD</title>
+{% endblock %}
 
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
