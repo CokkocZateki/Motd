@@ -8,10 +8,10 @@ class MotdMessage(models.Model):
     """Model for storing MOTD messages"""
 
     STYLE_CHOICES = [
-        ('info', 'Info (Blue)'),
-        ('success', 'Success (Green)'),
-        ('warning', 'Warning (Yellow)'),
-        ('danger', 'Danger (Red)'),
+        ('info', 'Low Priority'),
+        ('success', 'Medium Priority'),
+        ('warning', 'High Priority'),
+        ('danger', 'Important'),
     ]
 
     title = models.CharField(max_length=200, help_text="Title of the MOTD message")
@@ -20,7 +20,7 @@ class MotdMessage(models.Model):
         max_length=10,
         choices=STYLE_CHOICES,
         default='info',
-        help_text="Bootstrap alert style",
+        help_text="Message priority level",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -38,7 +38,7 @@ class MotdMessage(models.Model):
     is_active = models.BooleanField(default=True, help_text="Whether this message is active")
     show_to_all = models.BooleanField(
         default=True,
-        help_text="Show to all authenticated users",
+        help_text="Show to all members (users with Member state)",
     )
     restricted_to_groups = models.ManyToManyField(
         Group,
@@ -85,6 +85,10 @@ class MotdMessage(models.Model):
             return False
 
         if self.show_to_all:
+            # Only show to users with Member state
+            if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
+                if user.profile.state.name != 'Member':
+                    return False
             return True
 
         if self.restricted_to_groups.exists():
@@ -96,6 +100,7 @@ class MotdMessage(models.Model):
 
 class GroupMotd(models.Model):
     """Stores a message of the day for a specific group."""
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
@@ -111,7 +116,7 @@ class GroupMotd(models.Model):
 
 class StateMotd(models.Model):
     """Stores a message of the day for a specific Alliance Auth state."""
-
+    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     state_name = models.CharField(max_length=64, unique=True)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
