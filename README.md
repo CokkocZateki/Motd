@@ -10,7 +10,6 @@ A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displ
 - **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
 - **Front-end Management**: Users with permission can add messages directly from the dashboard
 - **Automatic Cleanup**: Management command to clean up expired messages
-- **Persistent Display**: Messages cannot be dismissed and remain until they expire or are deactivated
 - **Group/State MOTDs**: Optional per-group or per-state messages available at `/motd/dashboard/`
 
 ## Installation
