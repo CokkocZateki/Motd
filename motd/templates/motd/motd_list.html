@@ -1,21 +1,17 @@
-{% extends "allianceauth/base-bs5.html" %}
+{% extends "allianceauth/base.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}{% trans "Message of the Day" %}{% endblock %}
 {% block page_title %}{% trans "Message of the Day" %}{% endblock %}
 
-{% block sidebar %}
-    {% include 'allianceauth/sidebar.html' %}
-{% endblock %}
-
 {% block content %}
-<div class="col-lg-12">
+<div class="container-fluid">
     <h2>{% trans "Message of the Day" %}</h2>
     {% if perms.motd.add_motdmessage %}
         <div class="mb-3 text-end">
             <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
-                <i class="fas fa-plus"></i> {% trans "Add Message" %}
+                <i class="fas fa-plus"></i> Add Message
             </a>
         </div>
     {% endif %}
@@ -26,7 +22,7 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
-                            <h5 class="card-title mb-0">
+                            <h5 class="card-title">
                                 {% if message.style == 'danger' %}
                                     <i class="fas fa-exclamation-triangle text-danger"></i>
                                 {% elif message.style == 'warning' %}
@@ -41,18 +37,18 @@
                                     {{ message.get_style_display }}
                                 </span>
                             </h5>
-
+                            
                             {% if perms.motd.change_motdmessage or perms.motd.delete_motdmessage %}
                             <div class="btn-group btn-group-sm">
                                 {% if perms.motd.change_motdmessage %}
-                                <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="{% trans 'Edit' %}">
+                                <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 {% endif %}
                                 {% if perms.motd.delete_motdmessage %}
-                                <button type="button" class="btn btn-outline-danger"
+                                <button type="button" class="btn btn-outline-danger" 
                                         onclick="confirmDelete({{ message.id }}, '{{ message.title|escapejs }}')"
-                                        title="{% trans 'Delete' %}">
+                                        title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 {% endif %}
@@ -60,7 +56,7 @@
                             {% endif %}
                         </div>
 
-                        <div class="card-text motd-content mt-2">
+                        <div class="card-text motd-content">
                             {{ message.content|safe }}
                         </div>
 
@@ -68,18 +64,18 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <i class="fas fa-calendar"></i>
-                                    {% trans "Posted" %}: {{ message.start_date|date:"M d, Y H:i" }}
+                                    Posted: {{ message.start_date|date:"M d, Y H:i" }}
                                     {% if message.created_by %}
-                                        {% trans "by" %} {{ message.created_by.username }}
+                                        by {{ message.created_by.username }}
                                     {% endif %}
                                 </div>
                                 <div class="col-md-6 text-md-end">
                                     {% if message.end_date %}
                                         <i class="fas fa-clock"></i>
-                                        {% trans "Expires" %}: {{ message.end_date|date:"M d, Y H:i" }}
+                                        Expires: {{ message.end_date|date:"M d, Y H:i" }}
                                     {% else %}
                                         <i class="fas fa-infinity"></i>
-                                        {% trans "No expiry" %}
+                                        Permanent
                                     {% endif %}
                                 </div>
                             </div>
@@ -89,17 +85,42 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-info mb-0">
-            <i class="fas fa-info-circle"></i> {% trans "No messages to display." %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle fa-2x mb-3"></i>
+            <h5>No Messages Available</h5>
+            <p class="mb-0">There are currently no active MOTD messages to display.</p>
         </div>
     {% endif %}
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the message: <strong id="deleteMessageTitle"></strong>?</p>
+                <p class="text-muted">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-function confirmDelete(id, title) {
-    if (confirm(`Delete “${title}”?`)) {
-        window.location.href = "{% url 'motd:delete' 0 %}".replace('/0/', `/${id}/`);
-    }
+function confirmDelete(messageId, messageTitle) {
+    document.getElementById('deleteMessageTitle').textContent = messageTitle;
+    document.getElementById('deleteForm').action = "{% url 'motd:delete' 0 %}".replace('0', messageId);
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 </script>
 {% endblock %}
