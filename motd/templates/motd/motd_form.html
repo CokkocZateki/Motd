@@ -1,16 +1,12 @@
-{% extends "allianceauth/base-bs5.html" %}
+{% extends "allianceauth/base.html" %}
 {% load i18n %}
 {% load static %}
 
 {% block title %}{{ action }} {% trans "MOTD" %}{% endblock %}
 {% block page_title %}{{ action }} {% trans "MOTD" %}{% endblock %}
 
-{% block sidebar %}
-    {% include 'allianceauth/sidebar.html' %}
-{% endblock %}
-
 {% block content %}
-<div class="col-lg-12">
+<div class="container-fluid">
     <h2>{{ action }} {% trans "MOTD Message" %}</h2>
     
     <div class="card">
