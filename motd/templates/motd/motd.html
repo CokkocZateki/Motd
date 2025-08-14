@@ -2,10 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block extra_head %}
-<title>Group/State Messages</title>
-{% endblock %}
-
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
 {% endblock %}
@@ -35,4 +31,10 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.title = 'Group/State Messages';
+});
+</script>
 {% endblock %}
