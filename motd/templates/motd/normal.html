@@ -2,7 +2,9 @@
 {% load i18n %}
 {% load static %}
 
-{% block title %}Message of the Day - {{ block.super }}{% endblock %}
+{% block extra_head %}
+<title>Message of the Day</title>
+{% endblock %}
 
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
