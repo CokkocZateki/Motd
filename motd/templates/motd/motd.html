@@ -1,12 +1,15 @@
-{% extends "allianceauth/base.html" %}
+{% extends "allianceauth/base-bs5.html" %}
 {% load i18n %}
 {% load static %}
 
-{% block title %}{% trans "Group/State Messages" %}{% endblock %}
-{% block page_title %}{% trans "Group/State Messages" %}{% endblock %}
+{% block title %}Group/State Messages - {{ block.super }}{% endblock %}
+
+{% block sidebar %}
+    {% include 'allianceauth/sidebar.html' %}
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="col-lg-12">
     <h2>{% trans "Group/State Messages" %}</h2>
     
     {% for motd in motds %}
