@@ -87,13 +87,13 @@ class MotdMessage(models.Model):
         if self.show_to_all:
             # Only show to users with Member state
             if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
-                if user.profile.state.name != 'Member':
-                    return False
-            return True
-
+                if user.profile.state.name == 'Member':
+                    return True
+            return False
+# If show_to_all is False, check if user is in restricted groups
         if self.restricted_to_groups.exists():
             user_groups = user.groups.all()
-            return self.restricted_to_groups.filter(id__in=user_groups).exists()
+            return self.restricted_to_groups.filter(id__in=user_groups.values_list('id', flat=True)).exists()
 
         return False
 
