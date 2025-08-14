@@ -2,10 +2,6 @@
 {% load i18n %}
 {% load static %}
 
-{% block extra_head %}
-<title>{{ action }} MOTD</title>
-{% endblock %}
-
 {% block sidebar %}
     {% include 'allianceauth/sidebar.html' %}
 {% endblock %}
@@ -31,4 +27,10 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.title = '{{ action }} MOTD';
+});
+</script>
 {% endblock %}
