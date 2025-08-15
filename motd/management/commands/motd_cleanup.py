@@ -1,21 +1,23 @@
+# Django
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+# AA Motd
 from motd.models import MotdMessage
 
 
 class Command(BaseCommand):
-    help = 'Clean up expired MOTD messages'
+    help = "Clean up expired MOTD messages"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--dry-run',
-            action='store_true',
-            help='Show what would be deactivated without actually changing anything',
+            "--dry-run",
+            action="store_true",
+            help="Show what would be deactivated without actually changing anything",
         )
 
-    def handle(self, *args, **options):
-        dry_run = options['dry_run']
+    def handle(self, *args, **options):  # pylint: disable=unused-argument
+        dry_run = options["dry_run"]
         now = timezone.now()
 
         expired_messages = MotdMessage.objects.filter(

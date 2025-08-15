@@ -1,56 +1,58 @@
+# Django
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
-from .models import MotdMessage, GroupMotd, StateMotd
+
+from .models import GroupMotd, MotdMessage, StateMotd
 
 
 @admin.register(MotdMessage)
 class MotdMessageAdmin(admin.ModelAdmin):
     list_display = [
-        'title',
-        'priority_display',
-        'is_active',
-        'start_date',
-        'end_date',
-        'show_to_all',
-        'created_by',
-        'status_display',
+        "title",
+        "priority_display",
+        "is_active",
+        "start_date",
+        "end_date",
+        "show_to_all",
+        "created_by",
+        "status_display",
     ]
     list_filter = [
-        'style',
-        'is_active',
-        'show_to_all',
-        'created_at',
+        "style",
+        "is_active",
+        "show_to_all",
+        "created_at",
     ]
-    search_fields = ['title', 'content']
-    readonly_fields = ['created_at', 'updated_at', 'created_by']
-    filter_horizontal = ['restricted_to_groups']
+    search_fields = ["title", "content"]
+    readonly_fields = ["created_at", "updated_at", "created_by"]
+    filter_horizontal = ["restricted_to_groups"]
 
     fieldsets = [
         (
-            'Message Content',
+            "Message Content",
             {
-                'fields': ['title', 'content', 'style'],
+                "fields": ["title", "content", "style"],
             },
         ),
         (
-            'Display Settings',
+            "Display Settings",
             {
-                'fields': ['is_active', 'start_date', 'end_date'],
+                "fields": ["is_active", "start_date", "end_date"],
             },
         ),
         (
-            'Access Control',
+            "Access Control",
             {
-                'fields': ['show_to_all', 'restricted_to_groups'],
-                'description': 'Show to all will display to users with Member state only',
+                "fields": ["show_to_all", "restricted_to_groups"],
+                "description": "Show to all will display to users with Member state only",
             },
         ),
         (
-            'Metadata',
+            "Metadata",
             {
-                'fields': ['created_by', 'created_at', 'updated_at'],
-                'classes': ['collapse'],
+                "fields": ["created_by", "created_at", "updated_at"],
+                "classes": ["collapse"],
             },
         ),
     ]
@@ -60,20 +62,21 @@ class MotdMessageAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
+    @admin.display(description="Priority")
     def priority_display(self, obj):
         colors = {
-            'info': 'info',
-            'success': 'success', 
-            'warning': 'warning',
-            'danger': 'danger'
+            "info": "info",
+            "success": "success",
+            "warning": "warning",
+            "danger": "danger",
         }
         return format_html(
             '<span class="badge bg-{}">{}</span>',
-            colors.get(obj.style, 'secondary'),
-            obj.get_style_display()
+            colors.get(obj.style, "secondary"),
+            obj.get_style_display(),
         )
-    priority_display.short_description = 'Priority'
 
+    @admin.display(description="Status")
     def status_display(self, obj):
         if obj.is_currently_active():
             return format_html('<span style="color: green;">Active</span>')
@@ -84,7 +87,6 @@ class MotdMessageAdmin(admin.ModelAdmin):
         if obj.end_date and obj.end_date <= timezone.now():
             return format_html('<span style="color: gray;">Expired</span>')
         return format_html('<span style="color: gray;">Inactive</span>')
-    status_display.short_description = 'Status'
 
 
 @admin.register(GroupMotd)

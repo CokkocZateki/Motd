@@ -38,7 +38,7 @@
                                     {{ message.get_style_display }}
                                 </span>
                             </h5>
-                            
+
                             {% if perms.motd.change_motdmessage or perms.motd.delete_motdmessage %}
                             <div class="btn-group btn-group-sm">
                                 {% if perms.motd.change_motdmessage %}
@@ -47,7 +47,7 @@
                                 </a>
                                 {% endif %}
                                 {% if perms.motd.delete_motdmessage %}
-                                <button type="button" class="btn btn-outline-danger" 
+                                <button type="button" class="btn btn-outline-danger"
                                         onclick="confirmDelete({{ message.id }}, '{{ message.title|escapejs }}')"
                                         title="Delete">
                                     <i class="fas fa-trash"></i>
