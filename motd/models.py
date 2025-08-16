@@ -1,6 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import User, Group
+# Django
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils import timezone
 
 
@@ -8,10 +9,10 @@ class MotdMessage(models.Model):
     """Model for storing MOTD messages"""
 
     STYLE_CHOICES = [
-        ('info', 'Low Priority'),
-        ('success', 'Medium Priority'),
-        ('warning', 'High Priority'),
-        ('danger', 'Important'),
+        ("info", "Low Priority"),
+        ("success", "Medium Priority"),
+        ("warning", "High Priority"),
+        ("danger", "Important"),
     ]
 
     title = models.CharField(max_length=200, help_text="Title of the MOTD message")
@@ -19,7 +20,7 @@ class MotdMessage(models.Model):
     style = models.CharField(
         max_length=10,
         choices=STYLE_CHOICES,
-        default='info',
+        default="info",
         help_text="Message priority level",
     )
 
@@ -35,7 +36,9 @@ class MotdMessage(models.Model):
         help_text="When this message should stop displaying (leave blank for permanent)",
     )
 
-    is_active = models.BooleanField(default=True, help_text="Whether this message is active")
+    is_active = models.BooleanField(
+        default=True, help_text="Whether this message is active"
+    )
     show_to_all = models.BooleanField(
         default=True,
         help_text="Show to all members (users with Member state)",
@@ -50,11 +53,11 @@ class MotdMessage(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='created_motd_messages',
+        related_name="created_motd_messages",
     )
 
     class Meta:
-        ordering = ['-start_date']
+        ordering = ["-start_date"]
         verbose_name = "MOTD Message"
         verbose_name_plural = "MOTD Messages"
 
@@ -86,21 +89,26 @@ class MotdMessage(models.Model):
 
         if self.show_to_all:
             # Only show to users with Member state
-            if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
-                if user.profile.state.name == 'Member':
+            if hasattr(user, "profile") and hasattr(user.profile, "state"):
+                if user.profile.state.name == "Member":
                     return True
             return False
-# If show_to_all is False, check if user is in restricted groups
+        # If show_to_all is False, check if user is in restricted groups
         if self.restricted_to_groups.exists():
             user_groups = user.groups.all()
-            return self.restricted_to_groups.filter(id__in=user_groups.values_list('id', flat=True)).exists()
+            return self.restricted_to_groups.filter(
+                id__in=user_groups.values_list("id", flat=True)
+            ).exists()
 
         return False
 
 
 class GroupMotd(models.Model):
     """Stores a message of the day for a specific group."""
-    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+
+    id = models.AutoField(
+        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+    )
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
     message = models.TextField()
     enabled = models.BooleanField(default=True)
@@ -116,7 +124,10 @@ class GroupMotd(models.Model):
 
 class StateMotd(models.Model):
     """Stores a message of the day for a specific Alliance Auth state."""
-    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+
+    id = models.AutoField(
+        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+    )
     state_name = models.CharField(max_length=64, unique=True)
     message = models.TextField()
     enabled = models.BooleanField(default=True)

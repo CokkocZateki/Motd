@@ -1,6 +1,0 @@
-include README.md
-include LICENSE
-recursive-include motd/templates *
-recursive-include motd/static *
-recursive-exclude * __pycache__
-recursive-exclude * *.pyc
