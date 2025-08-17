@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load sri %}
 
 <div id="motd-dashboard-widget" class="col-12 mb-3">
     <div class="card">
@@ -13,15 +14,7 @@
                         <div class="alert alert-{{ message.style }} motd-alert">
                             <div class="motd-content">
                                 <h6 class="alert-heading mb-2">
-                                    {% if message.style == 'danger' %}
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    {% elif message.style == 'warning' %}
-                                        <i class="fas fa-exclamation-circle"></i>
-                                    {% elif message.style == 'success' %}
-                                        <i class="fas fa-check-circle"></i>
-                                    {% else %}
-                                        <i class="fas fa-info-circle"></i>
-                                    {% endif %}
+                                    {{ message.type.bootstrap_icon_html|safe }}
                                     {{ message.title }}
                                 </h6>
                                 <div class="motd-message-content">
@@ -48,7 +41,7 @@
                 <a href="{% url 'motd:list' %}" class="btn btn-sm btn-outline-primary">
                     <i class="fas fa-list"></i> View All Messages
                 </a>
-                {% if can_add_message %}
+                {% if perms.motd.manage_access %}
                     <a href="{% url 'motd:create' %}" class="btn btn-sm btn-outline-success ms-2">
                         <i class="fas fa-plus"></i> Add Message
                     </a>
@@ -58,43 +51,6 @@
     </div>
 </div>
 
-<style>
-.motd-alert {
-    margin-bottom: 1rem;
-    border-left: 4px solid;
-}
-
-.motd-alert.alert-danger {
-    border-left-color: #dc3545;
-    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
-}
-
-.motd-alert.alert-warning {
-    border-left-color: #fd7e14;
-    box-shadow: 0 2px 4px rgba(253, 126, 20, 0.1);
-}
-
-.motd-alert.alert-info {
-    border-left-color: #0d6efd;
-    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1);
-}
-
-.motd-alert.alert-success {
-    border-left-color: #198754;
-    box-shadow: 0 2px 4px rgba(25, 135, 84, 0.1);
-}
-
-.motd-content h6.alert-heading {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.motd-message-content {
-    line-height: 1.4;
-}
-
-#motd-dashboard-widget .card {
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-}
-</style>
+{% block extra_javascript %}
+    {% sri_static 'motd/css/motd.css' %}
+{% endblock %}
