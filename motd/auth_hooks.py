@@ -21,7 +21,7 @@ class MotdMenuItemHook(MenuItemHook):
         )
 
     def render(self, request):
-        if request.user.has_perm("motd.view_motdmessage"):
+        if request.user.has_perm("motd.basic_access"):
             return MenuItemHook.render(self, request)
         return ""
 
@@ -43,24 +43,15 @@ class MotdDashboardItemHook:
 
     def render(self, request):
         """Render the dashboard widget"""
-        if not request.user.has_perm("motd.view_motdmessage"):
-            return ""
-
-        active_messages = [
-            message
-            for message in MotdMessage.objects.filter(is_active=True).order_by(
-                "-start_date"
-            )
-            if message.can_user_see(request.user)
-        ]
+        active_messages = MotdMessage.objects.visible_to(request.user)[:5]
 
         # Pass permission check result to template
         context = {
-            "messages": active_messages[:5],
-            "user": request.user,
-            "can_add_message": request.user.has_perm("motd.add_motdmessage"),
+            "messages": active_messages,
         }
-        return render_to_string("motd/dashboard_widget.html", context, request=request)
+        return render_to_string(
+            "motd/dashboard_widget.html", context=context, request=request
+        )
 
 
 @hooks.register("dashboard_hook")
