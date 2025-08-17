@@ -1,25 +1,54 @@
-from django.db import models
-from django.contrib.auth.models import User, Group
+# Django
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+# Alliance Auth
+from allianceauth.authentication.models import State
+
+# AA Motd
+from motd.managers import MotdManager
+
+
+class General(models.Model):
+    """A model defining commonly used properties and methods for Motd."""
+
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = (
+            ("basic_access", "Can access this app, Motd."),
+            ("manage_access", "Can manage Motd."),
+        )
 
 
 class MotdMessage(models.Model):
     """Model for storing MOTD messages"""
 
-    STYLE_CHOICES = [
-        ('info', 'Low Priority'),
-        ('success', 'Medium Priority'),
-        ('warning', 'High Priority'),
-        ('danger', 'Important'),
-    ]
+    class MessageType(models.TextChoices):
+        INFO = "info", _("Low Priority")
+        SUCCESS = "success", _("Medium Priority")
+        WARNING = "warning", _("High Priority")
+        DANGER = "danger", _("Important")
+
+        def bootstrap_icon_html(self):
+            icon_map = {
+                self.INFO: "info-circle",
+                self.SUCCESS: "check-circle",
+                self.WARNING: "exclamation-circle",
+                self.DANGER: "exclamation-triangle",
+            }
+            icon_name = icon_map.get(self.value, "info-circle")
+            return f'<i class="fas fa-{icon_name}"></i>'
 
     title = models.CharField(max_length=200, help_text="Title of the MOTD message")
     content = models.TextField(help_text="Message content (HTML allowed)")
     style = models.CharField(
         max_length=10,
-        choices=STYLE_CHOICES,
-        default='info',
+        choices=MessageType.choices,
+        default=MessageType.INFO,
         help_text="Message priority level",
     )
 
@@ -35,11 +64,16 @@ class MotdMessage(models.Model):
         help_text="When this message should stop displaying (leave blank for permanent)",
     )
 
-    is_active = models.BooleanField(default=True, help_text="Whether this message is active")
-    show_to_all = models.BooleanField(
-        default=True,
-        help_text="Show to all members (users with Member state)",
+    is_active = models.BooleanField(
+        default=True, help_text="Whether this message is active"
     )
+
+    restricted_to_states = models.ManyToManyField(
+        State,
+        blank=True,
+        help_text="If specified, only show to users in these states",
+    )
+
     restricted_to_groups = models.ManyToManyField(
         Group,
         blank=True,
@@ -50,13 +84,16 @@ class MotdMessage(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='created_motd_messages',
+        related_name="created_motd_messages",
     )
 
+    objects = MotdManager()
+
     class Meta:
-        ordering = ['-start_date']
+        ordering = ["-start_date"]
         verbose_name = "MOTD Message"
         verbose_name_plural = "MOTD Messages"
+        default_permissions = ()
 
     def __str__(self):
         return f"{self.title} ({self.get_style_display()})"
@@ -64,77 +101,3 @@ class MotdMessage(models.Model):
     def clean(self):
         if self.end_date and self.end_date <= self.start_date:
             raise ValidationError("End date must be after start date")
-
-    def is_currently_active(self):
-        """Check if the message should be displayed right now"""
-        if not self.is_active:
-            return False
-
-        now = timezone.now()
-        if self.start_date > now:
-            return False
-
-        if self.end_date and self.end_date <= now:
-            return False
-
-        return True
-
-    def can_user_see(self, user):
-        """Check if a specific user can see this message"""
-        if not self.is_currently_active():
-            return False
-
-        # If show_to_all is True, show to all authenticated users
-        if self.show_to_all:
-            # Check if user has Member state (for Alliance Auth integration)
-            if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
-                # Only show to users with Member state
-                return user.profile.state.name == 'Member'
-            else:
-                # If no state system, show to all authenticated users
-                return user.is_authenticated
-        
-        # If show_to_all is False, check if user is in restricted groups
-        else:
-            # If no groups are specified and show_to_all is False, 
-            # show to all authenticated users
-            if not self.restricted_to_groups.exists():
-                return user.is_authenticated
-            
-            # Check if user is in any of the restricted groups
-            user_groups = user.groups.all()
-            return self.restricted_to_groups.filter(
-                id__in=user_groups.values_list('id', flat=True)
-            ).exists()
-
-
-class GroupMotd(models.Model):
-    """Stores a message of the day for a specific group."""
-    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    group = models.OneToOneField(Group, on_delete=models.CASCADE)
-    message = models.TextField()
-    enabled = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "Group MOTD"
-        verbose_name_plural = "Group MOTDs"
-        ordering = ["group__name"]
-
-    def __str__(self) -> str:
-        return f"MOTD for {self.group.name}"
-
-
-class StateMotd(models.Model):
-    """Stores a message of the day for a specific Alliance Auth state."""
-    id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    state_name = models.CharField(max_length=64, unique=True)
-    message = models.TextField()
-    enabled = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "State MOTD"
-        verbose_name_plural = "State MOTDs"
-        ordering = ["state_name"]
-
-    def __str__(self) -> str:
-        return f"MOTD for state {self.state_name}"

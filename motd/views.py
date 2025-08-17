@@ -1,164 +1,106 @@
-import logging
+# Django
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
-from .forms import MotdMessageForm
-from .models import MotdMessage, GroupMotd, StateMotd
+from django.core.handlers.wsgi import WSGIRequest
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
+
+# Alliance Auth
+from allianceauth.services.hooks import get_extension_logger
+
+# Alliance Auth (External Libs)
+from app_utils.logging import LoggerAddTag
+
+# AA Motd
+from motd import __title__
+from motd.forms import MotdMessageForm
+from motd.models import MotdMessage
+
+logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
 logger = logging.getLogger(__name__)
 
 
 @login_required
-def dashboard_widget(request):
+@permission_required("motd.basic_access")
+def dashboard_widget(request: WSGIRequest):
     """Render the MOTD dashboard widget"""
-    user = request.user
-    logger.info(f"User {user.username} loading dashboard widget")
-    
-    # Get all active messages for debugging
-    all_active = MotdMessage.objects.filter(is_active=True).order_by('-start_date')
-    logger.info(f"Dashboard widget: Found {all_active.count()} active messages")
-    
-    active_messages = []
-    for message in all_active:
-        can_see = message.can_user_see(user)
-        logger.info(f"Dashboard widget - Message '{message.title}': can_user_see = {can_see}, show_to_all = {message.show_to_all}, restricted_groups = {list(message.restricted_to_groups.values_list('name', flat=True))}")
-        if can_see:
-            active_messages.append(message)
-
-    logger.info(f"Dashboard widget: User can see {len(active_messages)} messages")
-
+    active_messages = MotdMessage.objects.visible_to(request.user).filter(
+        is_active=True
+    )[:5]
     context = {
-        'messages': active_messages[:5],
-        'user': user,
-        'can_add_message': request.user.has_perm('motd.add_motdmessage'),
+        "messages": active_messages,
     }
-    return render(request, 'motd/dashboard_widget.html', context)
+    return render(request, "motd/dashboard_widget.html", context)
 
 
 @login_required
-def motd_list(request):
-    user = request.user
-    logger.info(f"User {user.username} viewing MOTD list")
-    
-    # Log user's groups and state for debugging
-    user_groups = list(user.groups.values_list('name', flat=True))
-    logger.info(f"User groups: {user_groups}")
-    
-    if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
-        user_state = user.profile.state.name if user.profile.state else 'No state'
-        logger.info(f"User state: {user_state}")
-    else:
-        logger.info("User has no profile/state")
-    
-    # Get all active messages for debugging
-    all_active = MotdMessage.objects.filter(is_active=True).order_by('-start_date')
-    logger.info(f"Found {all_active.count()} active messages")
-    
-    all_messages = []
-    for message in all_active:
-        can_see = message.can_user_see(user)
-        restricted_groups = list(message.restricted_to_groups.values_list('name', flat=True))
-        logger.info(f"Message '{message.title}': can_user_see = {can_see}, show_to_all = {message.show_to_all}, restricted_groups = {restricted_groups}")
-        if can_see:
-            all_messages.append(message)
-
-    logger.info(f"User can see {len(all_messages)} messages total")
-
+@permission_required("motd.basic_access")
+def motd_list(request: WSGIRequest):
+    all_messages = MotdMessage.objects.visible_to(request.user).filter(is_active=True)
+    expired_messages = MotdMessage.objects.visible_to(request.user).filter(
+        is_active=False
+    )[:10]
     context = {
-        'messages_list': all_messages,
-        'user': user,
+        "active_messages": all_messages,
+        "expired_messages": expired_messages,
     }
-    return render(request, 'motd/motd_list.html', context)
+    return render(request, "motd/motd_list.html", context)
 
 
 @login_required
-@permission_required('motd.add_motdmessage')
-def motd_create(request):
+@permission_required("motd.manage_access")
+def motd_create(request: WSGIRequest):
     """Create a new MOTD message"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = MotdMessageForm(request.POST)
         if form.is_valid():
-            message = form.save(commit=False)
-            message.created_by = request.user
-            message.save()  # Save the message first
-            
-            # Now save the many-to-many relationships
-            form.save_m2m()
-            
-            # Debug: Check if groups were saved
-            logger.info(f"Message '{message.title}' saved with {message.restricted_to_groups.count()} groups")
-            
-            messages.success(request, 'Message created successfully.')
-            return redirect('motd:list')
+            motd = form.save(commit=False)
+            motd.created_by = request.user
+            motd.save()
+            form.save_m2m()  # Save many-to-many relationships
+
+            messages.success(request, "Message created successfully.")
+            return redirect("motd:list")
     else:
         form = MotdMessageForm()
 
-    return render(request, 'motd/motd_form.html', {'form': form, 'action': 'Create'})
+    return render(request, "motd/motd_form.html", {"form": form, "action": "Create"})
 
 
 @login_required
-@permission_required('motd.change_motdmessage')
-def motd_edit(request, pk):
+@permission_required("motd.manage_access")
+def motd_edit(request: WSGIRequest, pk):
     """Edit an existing MOTD message"""
     motd_message = get_object_or_404(MotdMessage, pk=pk)
-    
-    if request.method == 'POST':
+
+    if request.method == "POST":
         form = MotdMessageForm(request.POST, instance=motd_message)
         if form.is_valid():
-            message = form.save(commit=False)
-            message.save()  # Save the message first
-            
-            # Now save the many-to-many relationships
-            form.save_m2m()
-            
-            logger.info(f"Message '{message.title}' updated with {message.restricted_to_groups.count()} groups")
-            
-            messages.success(request, 'Message updated successfully.')
-            return redirect('motd:list')
+            form.save()
+
+            messages.success(request, "Message updated successfully.")
+            return redirect("motd:list")
     else:
         form = MotdMessageForm(instance=motd_message)
 
-    return render(request, 'motd/motd_form.html', {'form': form, 'action': 'Edit'})
+    return render(request, "motd/motd_form.html", {"form": form, "action": "Edit"})
 
 
 @login_required
-@permission_required('motd.delete_motdmessage')
-def motd_delete(request, pk):
+@permission_required("motd.manage_access")
+def motd_delete(request: WSGIRequest, pk: int):
     """Delete a MOTD message"""
     motd_message = get_object_or_404(MotdMessage, pk=pk)
-    
-    if request.method == 'POST':
-        logger.info(f"Deleting message '{motd_message.title}' by user {request.user.username}")
+
+    if request.method == "POST":
         motd_message.delete()
-        messages.success(request, f'Message "{motd_message.title}" deleted successfully.')
-        return redirect('motd:list')
-    
-    return redirect('motd:list')
+        msg = _(f"Message {motd_message.title} deleted successfully.")
+        messages.success(request, msg)
+        return JsonResponse(
+            data={"message": msg, "success": True}, status=200, safe=False
+        )
 
-
-@login_required
-def motd_dashboard(request: HttpRequest) -> HttpResponse:
-    """Legacy group/state MOTD system"""
-    user_groups = request.user.groups.all()
-    group_motds = (
-        GroupMotd.objects.filter(group__in=user_groups, enabled=True)
-        .select_related("group")
-        .order_by("group__name")
-    )
-
-    user_state = getattr(getattr(request.user, "profile", None), "state", None)
-    if user_state:
-        state_motds = StateMotd.objects.filter(
-            state_name=getattr(user_state, "name", str(user_state)), enabled=True
-        ).order_by("state_name")
-    else:
-        state_motds = StateMotd.objects.none()
-
-    motds = list(state_motds) + list(group_motds)
-
-    if motds:
-        return render(request, "motd/motd.html", {"motds": motds})
-
-    return render(request, "motd/normal.html")
+    msg = _("You are not allowed to delete this message.")
+    return JsonResponse(data={"message": msg, "success": False}, status=404, safe=False)

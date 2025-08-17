@@ -2,129 +2,97 @@
 {% load i18n %}
 {% load static %}
 
-{% block sidebar %}
-    {% include 'allianceauth/sidebar.html' %}
-{% endblock %}
-
-{% block extra_css %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-<style>
-    .select2-container {
-        width: 100% !important;
-    }
-    .form-label {
-        font-weight: 600;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="col-lg-12">
-    <h2>{{ action }} {% trans "MOTD Message" %}</h2>
-    
-    <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
-                    {{ form.title }}
-                </div>
+    <div class="col-lg-12">
+        <h2>{{ action }} {% trans "MOTD Message" %}</h2>
 
-                <div class="mb-3">
-                    <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
-                    {{ form.content }}
-                    <small class="form-text text-muted">{{ form.content.help_text }}</small>
-                </div>
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
 
-                <div class="mb-3">
-                    <label for="{{ form.style.id_for_label }}" class="form-label">{{ form.style.label }}</label>
-                    {{ form.style }}
-                    <small class="form-text text-muted">
-                        <span class="badge bg-info">Low</span> = Info messages,
-                        <span class="badge bg-success">Medium</span> = Normal updates,
-                        <span class="badge bg-warning">High</span> = Important notices,
-                        <span class="badge bg-danger">Important</span> = Critical alerts
-                    </small>
-                </div>
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                        {{ form.title }}
+                    </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="{{ form.start_date.id_for_label }}" class="form-label">{{ form.start_date.label }}</label>
-                            {{ form.start_date }}
-                            <small class="form-text text-muted">{{ form.start_date.help_text }}</small>
+                    <div class="mb-3">
+                        <label for="{{ form.content.id_for_label }}" class="form-label">{{ form.content.label }}</label>
+                        {{ form.content }}
+                        <small class="form-text text-muted">{{ form.content.help_text }}</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.style.id_for_label }}" class="form-label">{{ form.style.label }}</label>
+                        {{ form.style }}
+                        <small class="form-text text-muted">
+                            <span class="badge bg-info">Low</span> = Info messages,
+                            <span class="badge bg-success">Medium</span> = Normal updates,
+                            <span class="badge bg-warning">High</span> = Important notices,
+                            <span class="badge bg-danger">Important</span> = Critical alerts
+                        </small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label">{{ form.start_date.label }}</label>
+                                {{ form.start_date }}
+                                <small class="form-text text-muted">{{ form.start_date.help_text }}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label">{{ form.end_date.label }}</label>
+                                {{ form.end_date }}
+                                <small class="form-text text-muted">{{ form.end_date.help_text }}</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="{{ form.end_date.id_for_label }}" class="form-label">{{ form.end_date.label }}</label>
-                            {{ form.end_date }}
-                            <small class="form-text text-muted">{{ form.end_date.help_text }}</small>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                {{ form.is_active.label }}
+                            </label>
                         </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <div class="form-check">
-                        {{ form.is_active }}
-                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
-                            {{ form.is_active.label }}
-                        </label>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.show_to_all }}
+                            <label class="form-check-label" for="{{ form.show_to_all.id_for_label }}">
+                                {{ form.show_to_all.label }}
+                            </label>
+                            <small class="form-text text-muted d-block">{{ form.show_to_all.help_text }}</small>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <div class="form-check">
-                        {{ form.show_to_all }}
-                        <label class="form-check-label" for="{{ form.show_to_all.id_for_label }}">
-                            {{ form.show_to_all.label }}
-                        </label>
-                        <small class="form-text text-muted d-block">{{ form.show_to_all.help_text }}</small>
+                    <div class="mb-3" id="states-section">
+                        <label for="{{ form.restricted_to_states.id_for_label }}" class="form-label">{{ form.restricted_to_states.label }}</label>
+                        {{ form.restricted_to_states }}
+                        <small class="form-text text-muted">{{ form.restricted_to_states.help_text }}</small>
                     </div>
-                </div>
 
-                <div class="mb-3" id="groups-section">
-                    <label for="{{ form.restricted_to_groups.id_for_label }}" class="form-label">{{ form.restricted_to_groups.label }}</label>
-                    {{ form.restricted_to_groups }}
-                    <small class="form-text text-muted">{{ form.restricted_to_groups.help_text }}</small>
-                </div>
+                    <div class="mb-3" id="groups-section">
+                        <label for="{{ form.restricted_to_groups.id_for_label }}" class="form-label">{{ form.restricted_to_groups.label }}</label>
+                        {{ form.restricted_to_groups }}
+                        <small class="form-text text-muted">{{ form.restricted_to_groups.help_text }}</small>
+                    </div>
 
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> {% trans "Save Message" %}
-                </button>
-                <a href="{% url 'motd:list' %}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> {% trans "Cancel" %}
-                </a>
-            </form>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {% trans "Save Message" %}
+                    </button>
+                    <a href="{% url 'motd:list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> {% trans "Cancel" %}
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+{% endblock %}
 
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Initialize Select2 for groups dropdown
-    $('.select2').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'Select groups...',
-        allowClear: true,
-        width: '100%'
-    });
-    
-    // Toggle groups section based on show_to_all checkbox
-    function toggleGroups() {
-        if ($('#id_show_to_all').is(':checked')) {
-            $('#groups-section').hide();
-        } else {
-            $('#groups-section').show();
-        }
-    }
-    
-    toggleGroups();
-    $('#id_show_to_all').change(toggleGroups);
-});
-</script>
+{% block extra_javascript %}
+    {% include "motd/bundles/motd-form-bundle.html" %}
 {% endblock %}
