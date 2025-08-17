@@ -1,15 +1,12 @@
 {% extends "allianceauth/base-bs5.html" %}
 {% load i18n %}
 {% load static %}
-
-{% block sidebar %}
-    {% include 'allianceauth/sidebar.html' %}
-{% endblock %}
+{% load sri %}
 
 {% block content %}
 <div class="col-lg-12">
     <h2>{% trans "Message of the Day" %}</h2>
-    {% if perms.motd.add_motdmessage %}
+    {% if perms.motd.manage_access %}
         <div class="mb-3 text-end">
             <a href="{% url 'motd:create' %}" class="btn btn-sm btn-success">
                 <i class="fas fa-plus"></i> Add Message
@@ -24,35 +21,25 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <h5 class="card-title">
-                                {% if message.style == 'danger' %}
-                                    <i class="fas fa-exclamation-triangle text-danger"></i>
-                                {% elif message.style == 'warning' %}
-                                    <i class="fas fa-exclamation-circle text-warning"></i>
-                                {% elif message.style == 'success' %}
-                                    <i class="fas fa-check-circle text-success"></i>
-                                {% else %}
-                                    <i class="fas fa-info-circle text-info"></i>
-                                {% endif %}
+                                {{ message.type.bootstrap_icon_html|safe }}
                                 {{ message.title }}
                                 <span class="badge bg-{{ message.style }} ms-2">
                                     {{ message.get_style_display }}
                                 </span>
                             </h5>
 
-                            {% if perms.motd.change_motdmessage or perms.motd.delete_motdmessage %}
+                            {% if perms.motd.manage_access %}
                             <div class="btn-group btn-group-sm">
-                                {% if perms.motd.change_motdmessage %}
                                 <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                {% endif %}
-                                {% if perms.motd.delete_motdmessage %}
                                 <button type="button" class="btn btn-outline-danger"
-                                        onclick="confirmDelete({{ message.id }}, '{{ message.title|escapejs }}')"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-action="{% url 'motd:delete' message.id %}"
                                         title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                {% endif %}
                             </div>
                             {% endif %}
                         </div>
@@ -93,35 +80,10 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete the message: <strong id="deleteMessageTitle"></strong>?</p>
-                <p class="text-muted">This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<script>
-function confirmDelete(messageId, messageTitle) {
-    document.getElementById('deleteMessageTitle').textContent = messageTitle;
-    document.getElementById('deleteForm').action = "{% url 'motd:delete' 0 %}".replace('0', messageId);
-    new bootstrap.Modal(document.getElementById('deleteModal')).show();
-}
-</script>
+{% block extra_javascript %}
+    {% include 'motd/partials/modals/delete.html' %}
+    {% sri_static 'motd/js/delete-modal.js' %}
 {% endblock %}
