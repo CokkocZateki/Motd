@@ -84,18 +84,28 @@ class MotdMessage(models.Model):
         if not self.is_currently_active():
             return False
 
+        # If show_to_all is True, show to all authenticated users
         if self.show_to_all:
-            # Only show to users with Member state
+            # Check if user has Member state (for Alliance Auth integration)
             if hasattr(user, 'profile') and hasattr(user.profile, 'state'):
-                if user.profile.state.name == 'Member':
-                    return True
-            return False
-# If show_to_all is False, check if user is in restricted groups
-        if self.restricted_to_groups.exists():
+                # Only show to users with Member state
+                return user.profile.state.name == 'Member'
+            else:
+                # If no state system, show to all authenticated users
+                return user.is_authenticated
+        
+        # If show_to_all is False, check if user is in restricted groups
+        else:
+            # If no groups are specified and show_to_all is False, 
+            # show to all authenticated users
+            if not self.restricted_to_groups.exists():
+                return user.is_authenticated
+            
+            # Check if user is in any of the restricted groups
             user_groups = user.groups.all()
-            return self.restricted_to_groups.filter(id__in=user_groups.values_list('id', flat=True)).exists()
-
-        return False
+            return self.restricted_to_groups.filter(
+                id__in=user_groups.values_list('id', flat=True)
+            ).exists()
 
 
 class GroupMotd(models.Model):
