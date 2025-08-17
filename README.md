@@ -72,20 +72,20 @@ With the Following IDs you can set up the permissions for the Motd System
 ## Screenshots
 
 ### Admin View
-![Admin View](image.png)
+![Admin View](preview.png)
 
 
 ### Member View
-![Member View](image-1.png)
+![Member View](preview-1.png)
 
 ### Blue View
-![Blue View](image-2.png)
+![Blue View](preview-2.png)
 
 ### Capital Group View
-![Blue View](image-3.png)
+![Blue View](preview-3.png)
 
 ### Member & Capital View
-![Member & Capital View](image-4.png)
+![Member & Capital View](preview-4.png)
 
 ## Usage
 
