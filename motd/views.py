@@ -37,9 +37,12 @@ def dashboard_widget(request: WSGIRequest):
 @permission_required("motd.basic_access")
 def motd_list(request: WSGIRequest):
     all_messages = MotdMessage.objects.visible_to(request.user).filter(is_active=True)
-
+    expired_messages = MotdMessage.objects.visible_to(request.user).filter(
+        is_active=False
+    )[:10]
     context = {
-        "messages_list": all_messages,
+        "active_messages": all_messages,
+        "expired_messages": expired_messages,
     }
     return render(request, "motd/motd_list.html", context)
 

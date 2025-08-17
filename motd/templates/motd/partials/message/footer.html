@@ -1,0 +1,20 @@
+<div class="motd-meta mt-3 pt-2 border-top text-muted small">
+    <div class="row">
+        <div class="col-md-6">
+            <i class="fas fa-calendar"></i>
+            Posted: {{ message.start_date|date:"M d, Y H:i" }}
+            {% if message.created_by %}
+                by {{ message.created_by.username }}
+            {% endif %}
+        </div>
+        <div class="col-md-6 text-md-end">
+            {% if message.end_date %}
+                <i class="fas fa-clock"></i>
+                Expires: {{ message.end_date|date:"M d, Y H:i" }}
+            {% else %}
+                <i class="fas fa-infinity"></i>
+                Permanent
+            {% endif %}
+        </div>
+    </div>
+</div>

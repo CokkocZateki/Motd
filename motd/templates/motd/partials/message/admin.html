@@ -1,0 +1,14 @@
+{% if perms.motd.manage_access %}
+    <div class="btn-group btn-group-sm">
+        <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="Edit">
+            <i class="fas fa-edit"></i>
+        </a>
+        <button type="button" class="btn btn-outline-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal"
+                data-action="{% url 'motd:delete' message.id %}"
+                title="Delete">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+{% endif %}

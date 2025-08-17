@@ -14,9 +14,9 @@
         </div>
     {% endif %}
 
-    {% if messages_list %}
+    {% if active_messages or expired_messages %}
         <div class="motd-list">
-            {% for message in messages_list %}
+            {% for message in active_messages %}
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
@@ -28,49 +28,46 @@
                                 </span>
                             </h5>
 
-                            {% if perms.motd.manage_access %}
-                            <div class="btn-group btn-group-sm">
-                                <a href="{% url 'motd:edit' message.id %}" class="btn btn-outline-primary" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-outline-danger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"
-                                        data-action="{% url 'motd:delete' message.id %}"
-                                        title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                            {% endif %}
+                        {% include 'motd/partials/message/admin.html' with message=message %}
                         </div>
 
                         <div class="card-text motd-content">
                             {{ message.content|safe }}
                         </div>
 
-                        <div class="motd-meta mt-3 pt-2 border-top text-muted small">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <i class="fas fa-calendar"></i>
-                                    Posted: {{ message.start_date|date:"M d, Y H:i" }}
-                                    {% if message.created_by %}
-                                        by {{ message.created_by.username }}
-                                    {% endif %}
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    {% if message.end_date %}
-                                        <i class="fas fa-clock"></i>
-                                        Expires: {{ message.end_date|date:"M d, Y H:i" }}
-                                    {% else %}
-                                        <i class="fas fa-infinity"></i>
-                                        Permanent
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
+                        {% include 'motd/partials/message/footer.html' with message=message %}
                     </div>
                 </div>
             {% endfor %}
+
+            {% if expired_messages %}
+                <h2>{% trans "Expired Messages" %}</h2>
+                <div class="motd-list mt-5">
+                    {% for message in expired_messages %}
+                        <div class="card mb-3">
+                            <div class="card-body text-muted">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title text-decoration-line-through">
+                                        {{ message.type.bootstrap_icon_html|safe }}
+                                        {{ message.title }}
+                                        <span class="badge bg-{{ message.style }} ms-2">
+                                            {{ message.get_style_display }}
+                                        </span>
+                                    </h5>
+
+                                {% include 'motd/partials/message/admin.html' with message=message %}
+                                </div>
+
+                                <div class="card-text motd-content text-decoration-line-through">
+                                    {{ message.content|safe }}
+                                </div>
+
+                                {% include 'motd/partials/message/footer.html' with message=message %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
     {% else %}
         <div class="alert alert-info text-center">
