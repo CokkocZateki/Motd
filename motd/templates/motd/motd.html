@@ -2,33 +2,29 @@
 {% load i18n %}
 {% load static %}
 
-{% block sidebar %}
-    {% include 'allianceauth/sidebar.html' %}
-{% endblock %}
-
 {% block content %}
-<div class="col-lg-12">
-    <h2>{% trans "Group/State Messages" %}</h2>
+    {% if motds %}
+        <div class="col-lg-12">
+            <h2>{% trans "Message of the Day" %}</h2>
 
-    {% for motd in motds %}
-        <div class="card mb-3">
-            <div class="card-header">
-                {% if motd.group %}
-                    <i class="fas fa-users"></i> {{ motd.group.name }}
-                {% else %}
-                    <i class="fas fa-flag"></i> {{ motd.state_name }}
-                {% endif %}
-            </div>
-            <div class="card-body">
-                {{ motd.message|linebreaks }}
-            </div>
+            {% for motd in motds %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        {% if motd.group %}
+                            <i class="fas fa-users"></i> {{ motd.group.name }}
+                        {% else %}
+                            <i class="fas fa-flag"></i> {{ motd.state_name }}
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        {{ motd.message|linebreaks }}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
-
-    {% if not motds %}
+    {% else %}
         <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> {% trans "No group or state messages available." %}
+            <i class="fas fa-info-circle"></i> {% trans "No messages available." %}
         </div>
     {% endif %}
-</div>
 {% endblock %}
