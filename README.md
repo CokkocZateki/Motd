@@ -67,6 +67,26 @@ With the Following IDs you can set up the permissions for the Motd System
 | `basic_access`  | Can access the MOTD System module | All Members with the Permission can access the Motd System. |
 | `manage_access` | Can manage MOTD                   | Users with this permission can manage all.                  |
 
+
+
+## Screenshots
+
+### Admin View
+![Admin View](image.png)
+
+
+### Member View
+![Member View](image-1.png)
+
+### Blue View
+![Blue View](image-2.png)
+
+### Capital Group View
+![Blue View](image-3.png)
+
+### Member & Capital View
+![Member & Capital View](image-4.png)
+
 ## Usage
 
 1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
