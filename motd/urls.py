@@ -1,7 +1,8 @@
 # Django
 from django.urls import path
 
-from . import views
+# AA Motd
+from motd import views
 
 app_name: str = "motd"
 
@@ -11,6 +12,4 @@ urlpatterns = [
     path("create/", views.motd_create, name="create"),
     path("edit/<int:pk>/", views.motd_edit, name="edit"),
     path("delete/<int:pk>/", views.motd_delete, name="delete"),
-    # Legacy group/state MOTD system
-    path("dashboard/", views.motd_dashboard, name="motd-dashboard"),
 ]
