@@ -43,7 +43,9 @@ class MotdDashboardItemHook:
 
     def render(self, request):
         """Render the dashboard widget"""
-        active_messages = MotdMessage.objects.visible_to(request.user)[:5]
+        active_messages = MotdMessage.objects.visible_to(request.user).filter(
+            is_active=True
+        )[:5]
 
         # Pass permission check result to template
         context = {
