@@ -2,7 +2,16 @@
 
 A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displays important announcements and notifications on the dashboard.
 
-## Features
+- [AA Message of the Day](#aa-motd)
+  - [Features](#features)
+  - [Installation](#installation)
+    - [Step 1 - Install the Package](#step1)
+    - [Step 2 - Configure Alliance Auth](#step2)
+    - [Step 3 - Add the Scheduled Tasks and Settings](#step3)
+    - [Step 4 - Migration to AA](#step4)
+    - [Step 5 - Setting up Permissions](#step5)
+
+## Features <a name="features"></a>
 
 - **Dashboard Widget**: Shows current MOTD messages on the main Alliance Auth dashboard
 - **Flexible Scheduling**: Set start and end dates for messages
@@ -10,62 +19,53 @@ A simple and powerful Message of the Day (MOTD) app for Alliance Auth that displ
 - **Multiple Styles**: Bootstrap alert styles (info, success, warning, danger)
 - **Front-end Management**: Users with permission can add messages directly from the dashboard
 - **Automatic Cleanup**: Management command to clean up expired messages
-- **Group/State MOTDs**: Optional per-group or per-state messages available at `/motd/dashboard/`
 
-## Installation
+## Installation <a name="installation"></a>
+
+> [!NOTE]
+> AA MOTD System needs at least Alliance Auth v4.6.0
+> Please make sure to update your Alliance Auth before you install this APP
 
 1. Install the package:
 
-```bash
+Make sure you're in your virtual environment (venv) of your Alliance Auth then install the pakage.
+
+```shell
 pip install aa-motd
 ```
 
-2. Add to your Alliance Auth settings in `local.py`:
+### Step 2 - Configure Alliance Auth<a name="step2"></a>
+
+Configure your Alliance Auth settings (`local.py`) as follows:
+
+- Add `'motd',` to `INSTALLED_APPS`
+
+### Step 3 - Add the Scheduled Tasks<a name="step3"></a>
+
+To set up the Scheduled Tasks add following code to your `local.py`
 
 ```python
-INSTALLED_APPS += [
-    "motd",
-]
+CELERYBEAT_SCHEDULE["motd_update_all"] = {
+    "task": "motd.tasks.update_all_motd",
+    "schedule": crontab(minute="15,45"),
+}
 ```
 
-3. Run migrations:
+### Step 4 - Migration to AA<a name="step4"></a>
 
-```bash
-python manage.py migrate
+```shell
 python manage.py collectstatic
+python manage.py migrate
 ```
 
-4. Restart your Alliance Auth services. The app automatically adds a dashboard widget and a "MOTD" menu entry for users with the `motd.view_motdmessage` permission.
+### Step 5 - Setting up Permissions<a name="step5"></a>
 
-## Configuration
+With the Following IDs you can set up the permissions for the Motd System
 
-### Dashboard Widget Integration
-
-To display the MOTD widget on your dashboard, you'll need to modify your main dashboard template to include the widget. Add this to your dashboard template:
-
-```html
-{% include 'motd/dashboard_widget.html' %}
-```
-
-### Permissions
-
-The app uses the following permissions:
-
-- `motd.view_motdmessage` - View MOTD messages
-- `motd.add_motdmessage` - Create MOTD messages
-- `motd.change_motdmessage` - Edit MOTD messages
-- `motd.delete_motdmessage` - Delete MOTD messages
-
-Assign these permissions through the Alliance Auth admin interface.
-
-### Cleanup Command
-
-Set up a periodic task to clean up expired messages:
-
-```bash
-# Add to your crontab
-0 2 * * * cd /path/to/your/allianceauth && python manage.py motd_cleanup
-```
+| ID              | Description                       |                                                             |
+| :-------------- | :-------------------------------- | :---------------------------------------------------------- |
+| `basic_access`  | Can access the MOTD System module | All Members with the Permission can access the Motd System. |
+| `manage_access` | Can manage MOTD                   | Users with this permission can manage all.                  |
 
 ## Usage
 
@@ -75,26 +75,12 @@ Set up a periodic task to clean up expired messages:
 1. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
 1. **Legacy Group/State Messages**: Visit `/motd/dashboard/` to view group- or state-specific MOTDs
 
-## Requirements
-
-- Alliance Auth >= 4.0.0
-- Django >= 4.0
-- Python >= 3.8
-
 ## License
 
 MIT License
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-# MOTD App
-
-The templates live in `motd/templates/motd/` and can be
-extended to suit your needs. To use the app add `motd` to your
-`INSTALLED_APPS` and include `motd.urls` in your project URL
-configuration. MOTDs can be managed through the Django admin interface.
-
-After installing the app, run `python manage.py migrate` to create the
-database tables for storing MOTDs.
+> [!NOTE]
+> Contributing
+> You want to improve the project?
+> Just Make a [Pull Request](https://github.com/CokkocZateki/aa-motd/pulls) with the Guidelines.
+> We Using pre-commit
