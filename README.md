@@ -67,33 +67,34 @@ With the Following IDs you can set up the permissions for the Motd System
 | `basic_access`  | Can access the MOTD System module | All Members with the Permission can access the Motd System. |
 | `manage_access` | Can manage MOTD                   | Users with this permission can manage all.                  |
 
-
-
 ## Screenshots
 
 ### Admin View
-![Admin View](preview.png)
 
+![Admin View](https://raw.githubusercontent.com/CokkocZateki/aa-motd/refs/heads/main/motd/docs/images/preview.png)
 
 ### Member View
-![Member View](preview-1.png)
+
+![Member View](https://raw.githubusercontent.com/CokkocZateki/aa-motd/refs/heads/main/motd/docs/images/preview-1.png)
 
 ### Blue View
-![Blue View](preview-2.png)
+
+![Blue View](https://raw.githubusercontent.com/CokkocZateki/aa-motd/refs/heads/main/motd/docs/images/preview-2.png)
 
 ### Capital Group View
-![Blue View](preview-3.png)
+
+![Blue View](https://raw.githubusercontent.com/CokkocZateki/aa-motd/refs/heads/main/motd/docs/images/preview-3.png)
 
 ### Member & Capital View
-![Member & Capital View](preview-4.png)
+
+![Member & Capital View](https://raw.githubusercontent.com/CokkocZateki/aa-motd/refs/heads/main/motd/docs/images/preview-4.png)
 
 ## Usage
 
-1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.add_motdmessage`)
+1. **Creating Messages**: Use the "Add Message" button on the MOTD page (requires `motd.manage_access`)
 1. **Scheduling**: Set start and end dates to control when messages appear
 1. **Targeting**: Use group restrictions to show messages only to specific groups
 1. **Styling**: Choose appropriate priority levels and Bootstrap styles for visual impact
-1. **Legacy Group/State Messages**: Visit `/motd/dashboard/` to view group- or state-specific MOTDs
 
 ## License
 
