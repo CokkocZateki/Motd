@@ -19,8 +19,6 @@ from motd.models import MotdMessage
 
 logger = LoggerAddTag(get_extension_logger(__name__), __title__)
 
-logger = logging.getLogger(__name__)
-
 
 @login_required
 @permission_required("motd.basic_access")
