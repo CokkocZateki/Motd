@@ -43,6 +43,7 @@ class MotdDashboardItemHook:
 
     def render(self, request):
         """Render the dashboard widget"""
+        # pylint: disable=duplicate-code
         active_messages = MotdMessage.objects.visible_to(request.user).filter(
             is_active=True
         )[:5]
